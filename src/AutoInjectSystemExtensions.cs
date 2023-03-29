@@ -2,7 +2,7 @@
 {
     public static class AutoInjectSystemExtensions
     {
-        public static EcsSystems.Builder AutoInject(this EcsSystems.Builder self)
+        public static EcsPipeline.Builder AutoInject(this EcsPipeline.Builder self)
         {
             self.Add(new AutoInjectSystem());
             return self;

@@ -6,16 +6,14 @@ namespace DCFApixels.DragonECS
 {
     internal class AutoInjectionMap
     {
-        private readonly EcsSystems _source;
+        private readonly EcsPipeline _source;
 
         private Dictionary<Type, List<FiledRecord>> _systems;
 
-        public AutoInjectionMap(EcsSystems source)
+        public AutoInjectionMap(EcsPipeline source)
         {
             _source = source;
-
             var allsystems = _source.AllSystems;
-
             _systems = new Dictionary<Type, List<FiledRecord>>();
             foreach (var system in allsystems)
             {
@@ -68,24 +66,24 @@ namespace DCFApixels.DragonECS
     [DebugHide, DebugColor(DebugColor.Gray)]
     public class AutoInjectSystem : IEcsPreInitSystem, IEcsPreInject
     {
-        private EcsSystems _systems;
+        private EcsPipeline _pipeline;
         private List<object> _injectQueue = new List<object>();
 
         private AutoInjectionMap _autoInjectionMap;
 
         public void PreInject(object obj)
         {
-            if(_systems == null)
+            if(_pipeline == null)
             {
                 _injectQueue.Add(obj);
                 return;
             }
             AutoInject(obj);
         }
-        public void PreInit(EcsSystems systems)
+        public void PreInit(EcsPipeline pipeline)
         {
-            _systems = systems;
-            _autoInjectionMap = new AutoInjectionMap(_systems);
+            _pipeline = pipeline;
+            _autoInjectionMap = new AutoInjectionMap(_pipeline);
 
             foreach (var obj in _injectQueue)
             {
