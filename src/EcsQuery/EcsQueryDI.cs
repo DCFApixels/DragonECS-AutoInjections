@@ -3,37 +3,53 @@ using System.Reflection;
 
 namespace DCFApixels.DragonECS
 {
-    public class EcsQueryDI<TWorldArhetype> :EcsQuery<TWorldArhetype> where TWorldArhetype : EcsWorld<TWorldArhetype>
+    public abstract class EcsJoinQueryDI<TAttachComponent> : EcsJoinAttachQuery<TAttachComponent>
+        where TAttachComponent : struct, IEcsAttachComponent
     {
-        protected override void Init(Builder b)
-        {
-            Type builderType= b.GetType();
-            MethodInfo incluedMethod= builderType.GetMethod("Include", BindingFlags.Instance| BindingFlags.Public);
-            MethodInfo excludeMethod= builderType.GetMethod("Exclude", BindingFlags.Instance| BindingFlags.Public);
-            MethodInfo optionalMethod= builderType.GetMethod("Optional", BindingFlags.Instance| BindingFlags.Public);
+        protected override void Init(Builder b) => EcsQueryDIHelper.Fill(this, b);
+    }
+    public abstract class EcsQueryDI : EcsQuery
+    {
+        protected override void Init(Builder b) => EcsQueryDIHelper.Fill(this, b);
+    }
 
-            Type thisType = GetType();
+    internal static class EcsQueryDIHelper
+    {
+        public static void Fill(EcsQueryBase q, EcsQueryBase.Builder b)
+        {
+            Type builderType = b.GetType();
+            MethodInfo incluedMethod = builderType.GetMethod("Include", BindingFlags.Instance | BindingFlags.Public);
+            MethodInfo excludeMethod = builderType.GetMethod("Exclude", BindingFlags.Instance | BindingFlags.Public);
+            MethodInfo optionalMethod = builderType.GetMethod("Optional", BindingFlags.Instance | BindingFlags.Public);
+
+            //PropertyInfo componentTypeProp = builderType.GetProperty("ComponentType", BindingFlags.Instance | BindingFlags.Public);
+
+            Type thisType = q.GetType();
             FieldInfo[] fieldInfos = thisType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             foreach (FieldInfo fieldInfo in fieldInfos)
             {
-                Type fiedlType = fieldInfo.FieldType;
-                if (fiedlType.IsGenericType == false)
+                Type fieldType = fieldInfo.FieldType;
+                if (fieldType.IsSubclassOf(typeof(EcsPoolBase)) == false)
                     continue;
-                Type fiedlTypeDefinition = fiedlType.GetGenericTypeDefinition();
-                Type genericArg = fiedlType.GenericTypeArguments[0];
 
-                if (fiedlTypeDefinition == typeof(inc<>))
+                if (fieldType.IsGenericType == false)
+                    continue;
+                //Type fiedlTypeDefinition = fieldType.GetGenericTypeDefinition();
+
+                //Type componentType = ((EcsPoolBase)componentTypeProp.GetValue(fieldInfo.GetValue(q))).ComponentType;
+                Type componentType = fieldType.GenericTypeArguments[0];
+
+                if (fieldInfo.GetCustomAttribute<IncAttribute>() != null)
                 {
-                    fieldInfo.SetValue(this, incluedMethod.MakeGenericMethod(genericArg).Invoke(b, null));
+                    fieldInfo.SetValue(q, incluedMethod.MakeGenericMethod(componentType, fieldType).Invoke(b, null));
+                    continue;
                 }
-                if(fiedlTypeDefinition == typeof(exc<>))
+                if (fieldInfo.GetCustomAttribute<ExcAttribute>() != null)
                 {
-                    fieldInfo.SetValue(this, excludeMethod.MakeGenericMethod(genericArg).Invoke(b, null));
+                    fieldInfo.SetValue(q, excludeMethod.MakeGenericMethod(componentType, fieldType).Invoke(b, null));
+                    continue;
                 }
-                if (fiedlTypeDefinition == typeof(opt<>))
-                {
-                    fieldInfo.SetValue(this, optionalMethod.MakeGenericMethod(genericArg).Invoke(b, null));
-                }
+                fieldInfo.SetValue(q, optionalMethod.MakeGenericMethod(componentType, fieldType).Invoke(b, null));
             }
         }
     }
