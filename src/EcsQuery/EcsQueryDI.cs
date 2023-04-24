@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace DCFApixels.DragonECS
 {
-    public abstract class EcsJoinQueryDI<TAttachComponent> : EcsJoinAttachQuery<TAttachComponent>
+    public abstract class EcsJoinAttachQueryDI<TAttachComponent> : EcsJoinAttachQuery<TAttachComponent>
         where TAttachComponent : struct, IEcsAttachComponent
     {
         protected override void Init(Builder b) => EcsQueryDIHelper.Fill(this, b);
@@ -22,8 +22,6 @@ namespace DCFApixels.DragonECS
             MethodInfo excludeMethod = builderType.GetMethod("Exclude", BindingFlags.Instance | BindingFlags.Public);
             MethodInfo optionalMethod = builderType.GetMethod("Optional", BindingFlags.Instance | BindingFlags.Public);
 
-            //PropertyInfo componentTypeProp = builderType.GetProperty("ComponentType", BindingFlags.Instance | BindingFlags.Public);
-
             Type thisType = q.GetType();
             FieldInfo[] fieldInfos = thisType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             foreach (FieldInfo fieldInfo in fieldInfos)
@@ -31,12 +29,9 @@ namespace DCFApixels.DragonECS
                 Type fieldType = fieldInfo.FieldType;
                 if (fieldType.IsSubclassOf(typeof(EcsPoolBase)) == false)
                     continue;
-
                 if (fieldType.IsGenericType == false)
                     continue;
-                //Type fiedlTypeDefinition = fieldType.GetGenericTypeDefinition();
 
-                //Type componentType = ((EcsPoolBase)componentTypeProp.GetValue(fieldInfo.GetValue(q))).ComponentType;
                 Type componentType = fieldType.GenericTypeArguments[0];
 
                 if (fieldInfo.GetCustomAttribute<IncAttribute>() != null)
@@ -49,7 +44,11 @@ namespace DCFApixels.DragonECS
                     fieldInfo.SetValue(q, excludeMethod.MakeGenericMethod(componentType, fieldType).Invoke(b, null));
                     continue;
                 }
-                fieldInfo.SetValue(q, optionalMethod.MakeGenericMethod(componentType, fieldType).Invoke(b, null));
+                if (fieldInfo.GetCustomAttribute<OptAttribute>() != null)
+                {
+                    fieldInfo.SetValue(q, optionalMethod.MakeGenericMethod(componentType, fieldType).Invoke(b, null));
+                    continue;
+                }
             }
         }
     }
