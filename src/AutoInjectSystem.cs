@@ -30,7 +30,7 @@ namespace DCFApixels.DragonECS
                 Type systemType = system.GetType();
                 foreach (var field in systemType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
-                    AutoInjectAttribute autoInjectAttribute = field.GetCustomAttribute<AutoInjectAttribute>();
+                    EcsInjectAttribute autoInjectAttribute = field.GetCustomAttribute<EcsInjectAttribute>();
                     if (autoInjectAttribute != null)
                     {
                         Type fieldType = field.FieldType;
@@ -97,8 +97,8 @@ namespace DCFApixels.DragonECS
         {
             public readonly IEcsSystem target;
             public readonly FieldInfo field;
-            public readonly AutoInjectAttribute attribute;
-            public FiledRecord(IEcsSystem target, FieldInfo field, AutoInjectAttribute attribute)
+            public readonly EcsInjectAttribute attribute;
+            public FiledRecord(IEcsSystem target, FieldInfo field, EcsInjectAttribute attribute)
             {
                 this.target = target;
                 this.field = field;
@@ -108,7 +108,7 @@ namespace DCFApixels.DragonECS
     }
 
     [DebugHide, DebugColor(DebugColor.Gray)]
-    public class AutoInjectSystem : IEcsPreInitSystem, IEcsPreInject, IEcsPreInitInjectCallbacks
+    public class AutoInjectSystem : IEcsPreInitProcess, IEcsPreInject, IEcsPreInitInjectProcess
     {
         private EcsPipeline _pipeline;
         private List<object> _injectQueue = new List<object>();
