@@ -5,10 +5,15 @@ namespace DCFApixels.DragonECS
 {
     public abstract class EcsSubjectDI : EcsSubject
     {
-        protected sealed override void Init(Builder b) => EcsQueryDIHelper.Fill(this, b);
+        protected sealed override void Init(Builder b)
+        {
+            EcsSubjectDIHelper.Fill(this, b);
+            InitAfterDI(b);
+        }
+        protected virtual void InitAfterDI(Builder b) { }
     }
 
-    internal static class EcsQueryDIHelper
+    internal static class EcsSubjectDIHelper
     {
         public static void Fill(EcsSubject s, EcsSubject.Builder b)
         {
