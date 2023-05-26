@@ -28,7 +28,7 @@ namespace DCFApixels.DragonECS
             foreach (var system in allsystems)
             {
                 Type systemType = system.GetType();
-                foreach (var field in systemType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                foreach (var field in GetAllFieldsFor(systemType))
                 {
                     EcsInjectAttribute autoInjectAttribute = field.GetCustomAttribute<EcsInjectAttribute>();
                     if (autoInjectAttribute != null)
@@ -50,7 +50,18 @@ namespace DCFApixels.DragonECS
                 _notInjected.Add(item);
             }
         }
-
+        private static List<FieldInfo> GetAllFieldsFor(Type type)
+        {
+            List<FieldInfo> result = new List<FieldInfo>();
+            Do(type, result);
+            void Do(Type type, List<FieldInfo> result)
+            {
+                result.AddRange(type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
+                if (type.BaseType != null)
+                    Do(type.BaseType, result);
+            }
+            return result;
+        }
         public void Inject(object obj)
         {
             _notInjected.Remove(obj.GetType());
