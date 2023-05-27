@@ -106,6 +106,7 @@ namespace DCFApixels.DragonECS
 
         private void WarningMissedInjections()
         {
+#if DEBUG   
             foreach (var item in _notInjected)
             {
                 foreach (var systemRecord in _systems[item])
@@ -113,6 +114,7 @@ namespace DCFApixels.DragonECS
                     EcsDebug.PrintWarning($"in system {EcsDebugUtility.GetGenericTypeFullName(systemRecord.target.GetType(), 1)} is missing an injection of {EcsDebugUtility.GetGenericTypeFullName(item, 1)}.");
                 }
             }
+#endif
         }
 
         private readonly struct FiledRecord
