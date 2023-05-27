@@ -15,7 +15,7 @@ namespace DCFApixels.DragonECS
         private Dictionary<Type, List<FiledRecord>> _systems;
         private HashSet<Type> _notInjected;
 
-        private Type dummyInstance = typeof(DummyInstance<>);
+        private Type _dummyInstance = typeof(DummyInstance<>);
 
         private bool _isDummyInjected = false;
 
@@ -96,12 +96,23 @@ namespace DCFApixels.DragonECS
                     }
 
                     systemRecord.field.SetValue(systemRecord.target,
-                        dummyInstance.MakeGenericType(systemRecord.attribute.notNullDummyType).GetField("intsance", BindingFlags.Static | BindingFlags.Public).GetValue(null));
+                        _dummyInstance.MakeGenericType(systemRecord.attribute.notNullDummyType).GetField("intsance", BindingFlags.Static | BindingFlags.Public).GetValue(null));
                 }
             }
-
+            WarningMissedInjections();
             _notInjected.Clear();
             _notInjected= null;
+        }
+
+        private void WarningMissedInjections()
+        {
+            foreach (var item in _notInjected)
+            {
+                foreach (var systemRecord in _systems[item])
+                {
+                    EcsDebug.PrintWarning($"in system {EcsDebugUtility.GetGenericTypeFullName(systemRecord.target.GetType(), 1)} is missing an injection of {EcsDebugUtility.GetGenericTypeFullName(item, 1)}.");
+                }
+            }
         }
 
         private readonly struct FiledRecord
