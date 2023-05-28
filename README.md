@@ -3,10 +3,28 @@
 </p>
 
 # [DragonECS](https://github.com/DCFApixels/DragonECS) - Auto Injections Extension
-
 Данное ресширение призвано скоратить объем кода, упростив инбъекцию зависимостей, делая их автоматическими.
 
-## Инжекция зависимостей
+## Оглавление
+* [Установка](#Установка)
+   * [Unity-модуль](#Unity-модуль)
+   * [В виде иходников](#В-виде-иходников)
+* [Инъекция зависимостей](#Инъекция-зависимостей)
+* [Фабрикаа субъектов](#Фабрикаа-субъектов)
+* [Пример кода](#Пример-кода)
+* [Не null инъекции](#Не-null-инъекции)
+
+# Установка
+Сначала убдитесь что в проекте установлен [DragonECS](https://github.com/DCFApixels/DragonECS).
+* ### Unity-модуль
+Поддерживается установка в виде Unity-модуля в  при помощи добавления git-URL [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json`: 
+```
+https://github.com/DCFApixels/DragonECS.git 
+```
+* ### В виде иходников
+Фреймворк так же может быть добавлен в проект в виде исходников.
+
+## Инъекция зависимостей
 Аттрибут `[EcsInject]` скрывает необходимость использования интерфейса `IEcsInject<T>`, поля помеченные таким атрибутом автоматически подхватят зависимости переданные в метод Inject. 
 
 ## Фабрикаа субъектов
@@ -18,7 +36,6 @@
 
 
 ## Пример кода
-* ### С использованием AutoInjections
 ```csharp
 class VelocitySystemDI : IEcsRunProcess
 {
@@ -41,7 +58,9 @@ class VelocitySystemDI : IEcsRunProcess
     }
 }
 ```
- * ### Без AutoInjections
+<details>
+<summary>Тот же код но без AutoInjections</summary>
+    
 ```csharp
 class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
 {
@@ -72,6 +91,9 @@ class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<T
     }
 }
 ```
+
+</details>
+    
 ## Не null инъекции
 
 Чтобы поле помеченное `[EcsInject]` было проинициализированно даже в случае отстувия инъекции, в конструктор атрибута можно передать тип болванку. В примере ниже поле `foo` получит экземпляр класса `Foo` из инъекции или экземпляр `FooDummy` если инъекции небыло.
