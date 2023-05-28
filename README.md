@@ -1,5 +1,8 @@
-# DragonECS-AutoInjections
- Automatic dependency implementations
+<p align="center">
+<img width="400" src="https://github.com/DCFApixels/DragonECS-AutoInjections/assets/99481254/f120bb2b-5117-4546-aa13-4734b2608712.png">
+</p>
+
+# [DragonECS](https://github.com/DCFApixels/DragonECS) - Auto Injections Extension
 
 Данное ресширение призвано скоратить объем кода, упростив инбъекцию зависимостей, делая их автоматическими.
 
