@@ -7,7 +7,7 @@
 <!--<img alt="Discord" src="https://img.shields.io/discord/1111696966208999525?color=%23ff4e85&label=Discord&logo=Discord&logoColor=%23ff4e85&style=for-the-badge">-->
 </p>
 
-# [DragonECS](https://github.com/DCFApixels/DragonECS) - Auto Injections Extension
+# Auto Injections for [DragonECS](https://github.com/DCFApixels/DragonECS)
 Расширение призвано сократить объем кода, упростив инъекцию  зависимостей, делая их автоматически.
 > **ВАЖНО!** Проект в стадии разработки. API может меняться.
 # Оглавление
