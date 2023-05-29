@@ -11,19 +11,16 @@ namespace DCFApixels.DragonECS
     internal class AutoInjectionMap
     {
         private readonly EcsPipeline _source;
-
-        private Dictionary<Type, List<FiledRecord>> _systems;
+        private Dictionary<Type, List<FieldRecord>> _systems;
         private HashSet<Type> _notInjected;
-
         private Type _dummyInstance = typeof(DummyInstance<>);
-
         private bool _isDummyInjected = false;
 
         public AutoInjectionMap(EcsPipeline source)
         {
             _source = source;
             var allsystems = _source.AllSystems;
-            _systems = new Dictionary<Type, List<FiledRecord>>();
+            _systems = new Dictionary<Type, List<FieldRecord>>();
             _notInjected = new HashSet<Type>();
             foreach (var system in allsystems)
             {
@@ -34,27 +31,25 @@ namespace DCFApixels.DragonECS
                     if (autoInjectAttribute != null)
                     {
                         Type fieldType = field.FieldType;
-                        List<FiledRecord> list;
+                        List<FieldRecord> list;
                         if (!_systems.TryGetValue(fieldType, out list))
                         {
-                            list = new List<FiledRecord>();
+                            list = new List<FieldRecord>();
                             _systems.Add(fieldType, list);
                         }
 
-                        list.Add(new FiledRecord(system, field, autoInjectAttribute));
+                        list.Add(new FieldRecord(system, field, autoInjectAttribute));
                     }
                 }
             }
             foreach (var item in _systems.Keys)
-            {
                 _notInjected.Add(item);
-            }
         }
         private static List<FieldInfo> GetAllFieldsFor(Type type)
         {
             List<FieldInfo> result = new List<FieldInfo>();
             Do(type, result);
-            void Do(Type type, List<FieldInfo> result)
+            static void Do(Type type, List<FieldInfo> result)
             {
                 result.AddRange(type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
                 if (type.BaseType != null)
@@ -62,16 +57,17 @@ namespace DCFApixels.DragonECS
             }
             return result;
         }
-        public void Inject(object obj)
+        public void Inject(Type fieldType, object obj)
         {
             _notInjected.Remove(obj.GetType());
-            Type objectType = obj.GetType();
-            if(_systems.TryGetValue(objectType, out List<FiledRecord> list))
+            Type baseType = fieldType.BaseType;
+            if (baseType != null)
+                Inject(baseType, obj);
+
+            if (_systems.TryGetValue(fieldType, out List<FieldRecord> list))
             {
                 foreach (var item in list)
-                {
                     item.field.SetValue(item.target, obj);
-                }
             }
         }
 
@@ -79,7 +75,6 @@ namespace DCFApixels.DragonECS
         {
             if (_isDummyInjected)
                 return;
-
             _isDummyInjected = true;
             foreach (var notInjectedItem in _notInjected)
             {
@@ -117,12 +112,12 @@ namespace DCFApixels.DragonECS
 #endif
         }
 
-        private readonly struct FiledRecord
+        private readonly struct FieldRecord
         {
             public readonly IEcsSystem target;
             public readonly FieldInfo field;
             public readonly EcsInjectAttribute attribute;
-            public FiledRecord(IEcsSystem target, FieldInfo field, EcsInjectAttribute attribute)
+            public FieldRecord(IEcsSystem target, FieldInfo field, EcsInjectAttribute attribute)
             {
                 this.target = target;
                 this.field = field;
@@ -136,11 +131,8 @@ namespace DCFApixels.DragonECS
     {
         private EcsPipeline _pipeline;
         private List<object> _injectQueue = new List<object>();
-
         private AutoInjectionMap _autoInjectionMap;
-
         private bool _isPreInjectionComplete = false;
-
         public void PreInject(object obj)
         {
             if(_pipeline == null)
@@ -169,7 +161,7 @@ namespace DCFApixels.DragonECS
 
         private void AutoInject(object obj)
         {
-            _autoInjectionMap.Inject(obj);
+            _autoInjectionMap.Inject(obj.GetType(), obj);
         }
 
         public void OnPreInitInjectionBefore() { }
