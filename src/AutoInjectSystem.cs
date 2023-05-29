@@ -59,7 +59,7 @@ namespace DCFApixels.DragonECS
         }
         public void Inject(Type fieldType, object obj)
         {
-            _notInjected.Remove(obj.GetType());
+            _notInjected.Remove(fieldType);
             Type baseType = fieldType.BaseType;
             if (baseType != null)
                 Inject(baseType, obj);
