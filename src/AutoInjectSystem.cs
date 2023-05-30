@@ -114,10 +114,10 @@ namespace DCFApixels.DragonECS
 
         private readonly struct FieldRecord
         {
-            public readonly IEcsSystem target;
+            public readonly IEcsProcess target;
             public readonly FieldInfo field;
             public readonly EcsInjectAttribute attribute;
-            public FieldRecord(IEcsSystem target, FieldInfo field, EcsInjectAttribute attribute)
+            public FieldRecord(IEcsProcess target, FieldInfo field, EcsInjectAttribute attribute)
             {
                 this.target = target;
                 this.field = field;
