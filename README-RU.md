@@ -9,6 +9,10 @@
 </p>
 
 # Auto Injections for [DragonECS](https://github.com/DCFApixels/DragonECS)
+
+| Languages: | [Русский](https://github.com/DCFApixels/DragonECS-AutoInjections/blob/main/README-RU.md) | [English(WIP)](https://github.com/DCFApixels/DragonECS-AutoInjections) |
+| :--- | :--- | :--- |
+
 Расширение призвано сократить объем кода, упростив инъекцию  зависимостей, делая их автоматически.
 > **ВАЖНО!** Проект в стадии разработки. API может меняться.
 # Оглавление
