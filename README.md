@@ -34,7 +34,7 @@ https://github.com/DCFApixels/DragonECS-AutoInjections.git
 Фреймворк так же может быть добавлен в проект в виде исходников. 
 
 # Интеграция
-Добавьте вызов метода `AutoInject()` для фабрики Pipeline. Пример:
+Добавьте вызов метода `AutoInject()` для Builder-а пайплайна. Пример:
 ```csharp
 _pipeline = EcsPipeline.New()
     .Inject(world)
