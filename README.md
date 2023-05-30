@@ -9,61 +9,15 @@
 </p>
 
 # Auto Injections for [DragonECS](https://github.com/DCFApixels/DragonECS)
-Расширение призвано сократить объем кода, упростив инъекцию  зависимостей, делая их автоматически.
-> **ВАЖНО!** Проект в стадии разработки. API может меняться.
-# Оглавление
-* [Установка](#Установка)
-   * [Зависимости](#Зависимости)
-   * [Unity-модуль](#Unity-модуль)
-   * [В виде исходников](#В-виде-иходников)
-* [Интеграция](#Интеграция)
-* [Инъекция зависимостей](#Инъекция-зависимостей)
-* [Auto Builder субъектов](#Auto-Builder-субъектов)
-* [Пример кода](#Пример-кода)
-* [Не null инъекции](#Не-null-инъекции)
 
-# Установка
-### Зависимости
-Убедитесь что в проекте установлен фреймворк [DragonECS](https://github.com/DCFApixels/DragonECS).
-* ### Unity-модуль
-Поддерживается установка в виде Unity-модуля в  при помощи добавления git-URL [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json`: 
-```
-https://github.com/DCFApixels/DragonECS-AutoInjections.git
-```
-* ### В виде исходников
-Фреймворк так же может быть добавлен в проект в виде исходников. 
+| Languages: | [Русский](https://github.com/DCFApixels/DragonECS-AutoInjections/blob/main/README-RU.md) | [English(WIP)](https://github.com/DCFApixels/DragonECS-AutoInjections) |
+| :--- | :--- | :--- |
 
-# Интеграция
-Добавьте вызов метода `AutoInject()` для Builder-а пайплайна. Пример:
-```csharp
-_pipeline = EcsPipeline.New()
-    .Inject(world)
-    .Inject(_timeService)
-    .Add(new TestSystem())
-    .Add(new VelocitySystem())
-    .Add(new ViewSystem())
-    .AutoInject()
-    .BuildAndInit();
-```
-  
-# Инъекция зависимостей
-Атрибут `[EcsInject]` убирает необходимость использования интерфейса `IEcsInject<T>`, поля помеченные таким атрибутом автоматически подхватят зависимости внедренные в Pipeline. Пример： 
-```csharp
-[EcsInject] EcsDefaultWorld _world;
-```
-# Auto Builder субъектов
-Так же AutoInjections упрощает построение субъектов. Для начала наследуйте субъект не от `EcsSubject`, а от `EcsSubjectDI`, а далее добавьте специальные атрибуты.
+The extension is designed to reduce the amount of code by simplifying dependency injection by doing injections automatically.
+> **NOTICE:** The project is a work in progress, API may change.  
+> While the English version of the README is incomplete, you can view the [Russian version](https://github.com/DCFApixels/DragonECS/blob/main/README-RU.md).
 
-Атрибуты для инициализации полей с пулами: 
-* `[Inc]` - кеширует пул и добавит тип компонента в включающее ограничение субъекта, аналог метода `Include`;
-* `[Exc]` - кеширует пул и добавит тип компонента в исключающее ограничение субъекта, аналог метода `Exclude`;
-* `[Opt]` - только кеширует пул, аналог метода `Optional`;
-
-Дополнительные атрибуты только для задания ограничений субъекта. Их можно применить к самому субъекту, либо к любому полю внутри. Используйте атрибуты: 
-* `[IncImplicit(type)]` - добавит в включающее ограничение указанный в конструкторе тип `type`, аналог метода `Include`;
-* `[ExcImplicit(type)]` - добавит в исключающее ограничение указанный в конструкторе тип `type`, аналог метода `Exclude`;
-
-# Пример кода
+# Code Example
 ```csharp
 class VelocitySystemDI : IEcsRunProcess
 {
@@ -87,7 +41,7 @@ class VelocitySystemDI : IEcsRunProcess
 }
 ```
 <details>
-<summary>Тот же код но без AutoInjections</summary>
+<summary>Same code but without AutoInjections</summary>
     
 ```csharp
 class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
@@ -121,13 +75,3 @@ class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<T
 ```
 
 </details>
-    
-# Не null инъекции
-
-Чтобы поле помеченное `[EcsInject]` было проинициализированно даже в случае отстувия инъекции, в конструктор атрибута можно передать тип болванку. В примере ниже поле `foo` получит экземпляр класса `Foo` из инъекции или экземпляр `FooDummy : Foo` если инъекции небыло.
-``` csharp
-[EcsInject(typeof(FooDummy))] Foo foo;
-```
-> Для корректной работы переданный тип должен иметь конструктор без парамтров и быть либо того же типа что и поле, либо производного типа.
-  
-Расширение так же сообщит если по завершению предварительной инъекции, остались не проинициализированные поля с `[EcsInject]`.
