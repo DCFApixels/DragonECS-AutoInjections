@@ -20,9 +20,9 @@ namespace DCFApixels.DragonECS
             Type builderType = b.GetType();
             MethodInfo incluedMethod = builderType.GetMethod("Include", BindingFlags.Instance | BindingFlags.Public);
             MethodInfo excludeMethod = builderType.GetMethod("Exclude", BindingFlags.Instance | BindingFlags.Public);
+            MethodInfo optionalMethod = builderType.GetMethod("Optional", BindingFlags.Instance | BindingFlags.Public);
             MethodInfo includeImplicitMethod = builderType.GetMethod("IncludeImplicit", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             MethodInfo excludeImplicitMethod = builderType.GetMethod("ExcludeImplicit", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            MethodInfo optionalMethod = builderType.GetMethod("Optional", BindingFlags.Instance | BindingFlags.Public);
 
             Type subjectType = s.GetType();
 

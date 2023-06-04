@@ -11,7 +11,6 @@ namespace DCFApixels.DragonECS
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public sealed class OptAttribute : InjectAttribute { }
 
-
     public abstract class ImplicitInjectAttribute : Attribute { }
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public sealed class IncImplicitAttribute : ImplicitInjectAttribute
@@ -21,16 +20,8 @@ namespace DCFApixels.DragonECS
 
         public IncImplicitAttribute(Type type)
         {
-            if (type.IsValueType && !type.IsPrimitive)
-            {
-                isPool = false;
-                this.type = type;
-                return;
-            }
-            if (!type.GetInterfaces().Any(o => o == typeof(IEcsPoolImplementation)))
-                throw new ArgumentException("Можно использовать только пулы наследованные от IEcsPoolImplementation<T>");
             this.type = type;
-            isPool = true;
+            isPool = type.GetInterfaces().Any(o => o == typeof(IEcsPoolImplementation));
         }
     }
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
@@ -40,16 +31,8 @@ namespace DCFApixels.DragonECS
         public readonly bool isPool;
         public ExcImplicitAttribute(Type type)
         {
-            if (type.IsValueType && !type.IsPrimitive)
-            {
-                isPool = false;
-                this.type = type;
-                return;
-            }
-            if (!type.GetInterfaces().Any(o => o == typeof(IEcsPoolImplementation)))
-                throw new ArgumentException("Можно использовать только пулы наследованные от IEcsPoolImplementation<T>");
             this.type = type;
-            isPool = true;
+            isPool = type.GetInterfaces().Any(o => o == typeof(IEcsPoolImplementation));
         }
     }
 }
