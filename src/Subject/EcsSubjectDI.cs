@@ -31,17 +31,17 @@ namespace DCFApixels.DragonECS
                 if (attribute is IncImplicitAttribute incImplicit)
                 {
                     if (incImplicit.isPool)
-                        incluedMethod.MakeGenericMethod(incImplicit.type.GenericTypeArguments[0], incImplicit.type).Invoke(b, null);
+                        incluedMethod.MakeGenericMethod(incImplicit.type).Invoke(b, null);
                     else
-                        includeImplicitMethod.MakeGenericMethod(incImplicit.type).Invoke(b, null);
+                        includeImplicitMethod.Invoke(b, new object[] { incImplicit.type });
                     continue;
                 }
                 if (attribute is ExcImplicitAttribute excImplicit)
                 {
                     if (excImplicit.isPool)
-                        excludeMethod.MakeGenericMethod(excImplicit.type.GenericTypeArguments[0], excImplicit.type).Invoke(b, null);
+                        excludeMethod.MakeGenericMethod(excImplicit.type).Invoke(b, null);
                     else
-                        excludeImplicitMethod.MakeGenericMethod(excImplicit.type).Invoke(b, null);
+                        excludeImplicitMethod.Invoke(b, new object[] { excImplicit.type });
                     continue;
                 }
             }//TODO КОНЕЦ убрать дублирование кода - вынести в отедльный метод
@@ -57,17 +57,17 @@ namespace DCFApixels.DragonECS
                     if(attribute is IncImplicitAttribute incImplicit)
                     {
                         if(incImplicit.isPool)
-                            incluedMethod.MakeGenericMethod(incImplicit.type.GenericTypeArguments[0], incImplicit.type).Invoke(b, null);
+                            incluedMethod.MakeGenericMethod(incImplicit.type).Invoke(b, null);
                         else
-                            includeImplicitMethod.MakeGenericMethod(incImplicit.type).Invoke(b, null);
+                            includeImplicitMethod.Invoke(b, new object[] { incImplicit.type });
                         continue;
                     }
                     if (attribute is ExcImplicitAttribute excImplicit)
                     {
                         if (excImplicit.isPool)
-                            excludeMethod.MakeGenericMethod(excImplicit.type.GenericTypeArguments[0], excImplicit.type).Invoke(b, null);
+                            excludeMethod.MakeGenericMethod(excImplicit.type).Invoke(b, null);
                         else
-                            excludeImplicitMethod.MakeGenericMethod(excImplicit.type).Invoke(b, null);
+                            excludeImplicitMethod.Invoke(b, new object[] { excImplicit.type });
                         continue;
                     }
                 }//TODO КОНЕЦ убрать дублирование кода - вынести в отедльный метод
@@ -77,21 +77,21 @@ namespace DCFApixels.DragonECS
                 if (fieldType.IsGenericType == false)
                     continue;
 
-                Type componentType = fieldType.GenericTypeArguments[0];
+                //Type componentType = fieldType.GenericTypeArguments[0];
 
                 if (fieldInfo.GetCustomAttribute<IncAttribute>() != null)
                 {
-                    fieldInfo.SetValue(s, incluedMethod.MakeGenericMethod(componentType, fieldType).Invoke(b, null));
+                    fieldInfo.SetValue(s, incluedMethod.MakeGenericMethod(fieldType).Invoke(b, null));
                     continue;
                 }
                 if (fieldInfo.GetCustomAttribute<ExcAttribute>() != null)
                 {
-                    fieldInfo.SetValue(s, excludeMethod.MakeGenericMethod(componentType, fieldType).Invoke(b, null));
+                    fieldInfo.SetValue(s, excludeMethod.MakeGenericMethod(fieldType).Invoke(b, null));
                     continue;
                 }
                 if (fieldInfo.GetCustomAttribute<OptAttribute>() != null)
                 {
-                    fieldInfo.SetValue(s, optionalMethod.MakeGenericMethod(componentType, fieldType).Invoke(b, null));
+                    fieldInfo.SetValue(s, optionalMethod.MakeGenericMethod(fieldType).Invoke(b, null));
                     continue;
                 }
             }
