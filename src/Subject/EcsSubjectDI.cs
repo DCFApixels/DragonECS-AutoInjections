@@ -23,6 +23,7 @@ namespace DCFApixels.DragonECS
             MethodInfo optionalMethod = builderType.GetMethod("Optional", BindingFlags.Instance | BindingFlags.Public);
             MethodInfo includeImplicitMethod = builderType.GetMethod("IncludeImplicit", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             MethodInfo excludeImplicitMethod = builderType.GetMethod("ExcludeImplicit", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo combineMethod = builderType.GetMethod("Combine", BindingFlags.Instance | BindingFlags.Public);
 
             Type subjectType = s.GetType();
 
@@ -54,9 +55,9 @@ namespace DCFApixels.DragonECS
 
                 foreach (var attribute in fieldInfo.GetCustomAttributes<ImplicitInjectAttribute>())//TODO убрать дублирование кода - вынести в отедльный метод
                 {
-                    if(attribute is IncImplicitAttribute incImplicit)
+                    if (attribute is IncImplicitAttribute incImplicit)
                     {
-                        if(incImplicit.isPool)
+                        if (incImplicit.isPool)
                             incluedMethod.MakeGenericMethod(incImplicit.type).Invoke(b, null);
                         else
                             includeImplicitMethod.Invoke(b, new object[] { incImplicit.type });
@@ -72,26 +73,27 @@ namespace DCFApixels.DragonECS
                     }
                 }//TODO КОНЕЦ убрать дублирование кода - вынести в отедльный метод
 
-                if (fieldInfo.GetCustomAttribute<InjectAttribute>() == null)
-                    continue;
-                if (fieldType.IsGenericType == false)
+                if (!fieldInfo.TryGetAttribute(out InjectAttribute injectAttribute))
                     continue;
 
-                //Type componentType = fieldType.GenericTypeArguments[0];
-
-                if (fieldInfo.GetCustomAttribute<IncAttribute>() != null)
+                if (injectAttribute is IncAttribute)
                 {
                     fieldInfo.SetValue(s, incluedMethod.MakeGenericMethod(fieldType).Invoke(b, null));
                     continue;
                 }
-                if (fieldInfo.GetCustomAttribute<ExcAttribute>() != null)
+                if (injectAttribute is ExcAttribute)
                 {
                     fieldInfo.SetValue(s, excludeMethod.MakeGenericMethod(fieldType).Invoke(b, null));
                     continue;
                 }
-                if (fieldInfo.GetCustomAttribute<OptAttribute>() != null)
+                if (injectAttribute is OptAttribute)
                 {
                     fieldInfo.SetValue(s, optionalMethod.MakeGenericMethod(fieldType).Invoke(b, null));
+                    continue;
+                }
+                if (injectAttribute is CombineAttribute combAttribute)
+                {
+                    fieldInfo.SetValue(s, combineMethod.MakeGenericMethod(fieldType).Invoke(b, new object[] { combAttribute.order }));
                     continue;
                 }
             }

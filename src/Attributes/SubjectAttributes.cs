@@ -3,13 +3,19 @@ using System.Linq;
 
 namespace DCFApixels.DragonECS
 {
-    public class InjectAttribute : Attribute { }
+    public abstract class InjectAttribute : Attribute { }
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public sealed class IncAttribute : InjectAttribute { }
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public sealed class ExcAttribute : InjectAttribute { }
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public sealed class OptAttribute : InjectAttribute { }
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public sealed class CombineAttribute : InjectAttribute
+    {
+        public readonly int order = 0;
+        public CombineAttribute(int order = 0) => this.order = order;
+    }
 
     public abstract class ImplicitInjectAttribute : Attribute { }
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
@@ -17,7 +23,6 @@ namespace DCFApixels.DragonECS
     {
         public readonly Type type;
         public readonly bool isPool;
-
         public IncImplicitAttribute(Type type)
         {
             this.type = type;
