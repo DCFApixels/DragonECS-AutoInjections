@@ -49,7 +49,7 @@ _pipeline = EcsPipeline.New()
     .Add(new TestSystem())
     .Add(new VelocitySystem())
     .Add(new ViewSystem())
-    .AutoInject() // Активирует автоинъекции
+    .AutoInject() // Готово, автоматические внедрения активированы
     .BuildAndInit();
 ```
   
