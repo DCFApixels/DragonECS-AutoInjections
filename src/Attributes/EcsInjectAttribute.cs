@@ -2,7 +2,7 @@
 
 namespace DCFApixels.DragonECS
 {
-    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
     public sealed class EcsInjectAttribute : Attribute
     {
         public readonly Type notNullDummyType;
