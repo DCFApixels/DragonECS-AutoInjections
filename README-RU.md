@@ -58,7 +58,7 @@ _pipeline = EcsPipeline.New()
 ```csharp
 [EcsInject] EcsDefaultWorld _world;
 ```
-Так же можно делать внедрение через свойсвто или метод
+Так же можно делать внедрение через свойство или метод
 ```csharp
 EcsDefaultWorld _world;
 
