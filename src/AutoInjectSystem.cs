@@ -209,11 +209,8 @@ namespace DCFApixels.DragonECS
     #region Utils
     internal interface IInjectedProperty
     {
-        public bool IsCanSet { get; }
-        public bool IsCanGet { get; }
         public bool IsInjected { get; }
         public Type PropertyType { get; }
-        MemberInfo GetMember();
         EcsInjectAttribute GetAutoInjectAttribute();
         void Inject(object target, object value);
     }
@@ -221,8 +218,6 @@ namespace DCFApixels.DragonECS
     {
         private FieldInfo _member;
         private EcsInjectAttribute _injectAttribute;
-        public bool IsCanSet => true;
-        public bool IsCanGet => true;
         public bool IsInjected { get; private set; }
         public Type PropertyType => _member.FieldType;
         public InjectedField(FieldInfo member)
@@ -230,7 +225,6 @@ namespace DCFApixels.DragonECS
             _member = member;
             _injectAttribute = member.GetCustomAttribute<EcsInjectAttribute>();
         }
-        public MemberInfo GetMember() => _member;
         public EcsInjectAttribute GetAutoInjectAttribute() => _injectAttribute;
         public void Inject(object target, object value)
         {
@@ -242,8 +236,6 @@ namespace DCFApixels.DragonECS
     {
         private PropertyInfo _member;
         private EcsInjectAttribute _injectAttribute;
-        public bool IsCanSet => _member.CanWrite;
-        public bool IsCanGet => _member.CanRead;
         public bool IsInjected { get; private set; }
         public Type PropertyType => _member.PropertyType;
         public InjectedProperty(PropertyInfo member)
@@ -251,7 +243,6 @@ namespace DCFApixels.DragonECS
             _member = member;
             _injectAttribute = member.GetCustomAttribute<EcsInjectAttribute>();
         }
-        public MemberInfo GetMember() => _member;
         public EcsInjectAttribute GetAutoInjectAttribute() => _injectAttribute;
         public void Inject(object target, object value)
         {
@@ -264,8 +255,6 @@ namespace DCFApixels.DragonECS
         private MethodInfo _member;
         private EcsInjectAttribute _injectAttribute;
         private Type propertyType;
-        public bool IsCanSet => true;
-        public bool IsCanGet => false;
         public bool IsInjected { get; private set; }
         public Type PropertyType => propertyType;
         public InjectedMethod(MethodInfo member)
@@ -274,7 +263,6 @@ namespace DCFApixels.DragonECS
             _injectAttribute = member.GetCustomAttribute<EcsInjectAttribute>();
             propertyType = _member.GetParameters()[0].ParameterType;
         }
-        public MemberInfo GetMember() => _member;
         public EcsInjectAttribute GetAutoInjectAttribute() => _injectAttribute;
         public void Inject(object target, object value)
         {
