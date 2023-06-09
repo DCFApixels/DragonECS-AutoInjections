@@ -58,6 +58,16 @@ _pipeline = EcsPipeline.New()
 ```csharp
 [EcsInject] EcsDefaultWorld _world;
 ```
+Так же можно делать внедрение через свойство или метод
+```csharp
+EcsDefaultWorld _world;
+
+//Обязательно наличие set блока.  
+[EcsInject] EcsDefaultWorld World { set => _world = value; } 
+
+//Количество аргментов должно быть равно 1.  
+[EcsInject] void InjectWorld(EcsDefaultWorld world) => _world = world;
+```
 # Auto Builder субъектов
 Так же AutoInjections упрощает построение субъектов. Для начала наследуйте субъект не от `EcsSubject`, а от `EcsSubjectDI`, а далее добавьте специальные атрибуты.
 
