@@ -65,7 +65,7 @@ EcsDefaultWorld _world;
 //Обязательно наличие set блока.  
 [EcsInject] EcsDefaultWorld World { set => _world = value; } 
 
-//Количество аргментов должно быть равно 1.  
+//Количество аргументов должно быть равно 1.
 [EcsInject] void InjectWorld(EcsDefaultWorld world) => _world = world;
 ```
 # Auto Builder субъектов
