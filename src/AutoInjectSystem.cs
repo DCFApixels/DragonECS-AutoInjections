@@ -28,9 +28,6 @@ namespace DCFApixels.DragonECS
                 Type systemType = system.GetType();
                 foreach (var property in GetAllPropertiesFor(systemType))
                 {
-                    if (property.GetAutoInjectAttribute() == null)
-                        continue;
-
                     Type fieldType = property.PropertyType;
                     List<InjectedPropertyRecord> list;
                     if (!_systemProoperties.TryGetValue(fieldType, out list))
@@ -38,7 +35,6 @@ namespace DCFApixels.DragonECS
                         list = new List<InjectedPropertyRecord>();
                         _systemProoperties.Add(fieldType, list);
                     }
-
                     list.Add(new InjectedPropertyRecord(system, property));
                 }
             }
@@ -202,7 +198,7 @@ namespace DCFApixels.DragonECS
         private void ClearUsless()
         {
             _autoInjectionMap = null;
-            GC.Collect(0); //Собрать все хламовые созданне время мини классы
+            GC.Collect(0); //Собрать все хламовые мини классы созданне временно 
         }
     }
 
