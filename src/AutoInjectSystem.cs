@@ -41,43 +41,45 @@ namespace DCFApixels.DragonECS
             foreach (var item in _systemProoperties.Keys)
                 _notInjected.Add(item);
         }
-        private static List<IInjectedProperty> GetAllPropertiesFor(Type type)
+
+        private static void Do(Type type, List<IInjectedProperty> result)
         {
             const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            result.AddRange(type.GetFields(bindingFlags)
+                .Where(o => o.GetCustomAttribute<EcsInjectAttribute>() != null)
+                .Select(o => new InjectedField(o)));
+            result.AddRange(type.GetProperties(bindingFlags)
+                .Where(o => {
+                    if (o.GetCustomAttribute<EcsInjectAttribute>() == null)
+                        return false;
+#if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
+                    if (o.CanWrite == false)
+                        throw new EcsAutoInjectionException($"{o.Name} property is cant write");
+#endif
+                    return true;
+                })
+                .Select(o => new InjectedProperty(o)));
+            result.AddRange(type.GetMethods(bindingFlags)
+                .Where(o => {
+                    if (o.GetCustomAttribute<EcsInjectAttribute>() == null)
+                        return false;
+#if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
+                    if (o.IsGenericMethod)
+                        throw new EcsAutoInjectionException($"{o.Name} method is Generic");
+                    if (o.GetParameters().Length != 1)
+                        throw new EcsAutoInjectionException($"{o.Name} method Arguments != 1");
+#endif
+                    return true;
+                })
+                .Select(o => new InjectedMethod(o)));
+            if (type.BaseType != null)
+                Do(type.BaseType, result);
+        }
+
+        private static List<IInjectedProperty> GetAllPropertiesFor(Type type)
+        {
             List<IInjectedProperty> result = new List<IInjectedProperty>();
             Do(type, result);
-            static void Do(Type type, List<IInjectedProperty> result)
-            {
-                result.AddRange(type.GetFields(bindingFlags)
-                    .Where(o => o.GetCustomAttribute<EcsInjectAttribute>() != null)
-                    .Select(o => new InjectedField(o)));
-                result.AddRange(type.GetProperties(bindingFlags)
-                    .Where(o =>{
-                        if (o.GetCustomAttribute<EcsInjectAttribute>() == null)
-                            return false;
-#if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
-                        if (o.CanWrite == false)
-                            throw new EcsAutoInjectionException($"{o.Name} property is cant write");
-#endif
-                        return true;
-                    })
-                    .Select(o => new InjectedProperty(o)));
-                result.AddRange(type.GetMethods(bindingFlags)
-                    .Where(o => {
-                        if (o.GetCustomAttribute<EcsInjectAttribute>() == null)
-                            return false;
-#if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
-                        if (o.IsGenericMethod)
-                            throw new EcsAutoInjectionException($"{o.Name} method is Generic");
-                        if (o.GetParameters().Length != 1)
-                            throw new EcsAutoInjectionException($"{o.Name} method Arguments != 1");
-#endif
-                        return true;
-                    })
-                    .Select(o => new InjectedMethod(o))); 
-                if (type.BaseType != null)
-                    Do(type.BaseType, result);
-            }
             return result;
         }
         public void Inject(Type fieldType, object obj)
@@ -119,7 +121,7 @@ namespace DCFApixels.DragonECS
             }
             WarningMissedInjections();
             _notInjected.Clear();
-            _notInjected= null;
+            _notInjected = null;
         }
 
         private void WarningMissedInjections()
@@ -155,7 +157,7 @@ namespace DCFApixels.DragonECS
         private bool _isPreInjectionComplete = false;
         public void PreInject(object obj)
         {
-            if(_pipeline == null)
+            if (_pipeline == null)
             {
                 _injectQueue.Add(obj);
                 return;
@@ -205,8 +207,8 @@ namespace DCFApixels.DragonECS
     #region Utils
     internal interface IInjectedProperty
     {
-        public bool IsInjected { get; }
-        public Type PropertyType { get; }
+        bool IsInjected { get; }
+        Type PropertyType { get; }
         EcsInjectAttribute GetAutoInjectAttribute();
         void Inject(object target, object value);
     }
