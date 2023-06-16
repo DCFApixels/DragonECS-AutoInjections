@@ -5,17 +5,14 @@ using System.Reflection;
 
 namespace DCFApixels.DragonECS
 {
-    internal static class DummyInstance<T>
-    {
-        public static T intsance = (T)Activator.CreateInstance(typeof(T));
-    }
     internal class AutoInjectionMap
     {
         private readonly EcsPipeline _source;
         private Dictionary<Type, List<InjectedPropertyRecord>> _systemProoperties;
         private HashSet<Type> _notInjected;
-        private Type _dummyInstance = typeof(DummyInstance<>);
         private bool _isDummyInjected = false;
+
+        private bool _isPreInitInjectionComplete = false;
 
         public AutoInjectionMap(EcsPipeline source)
         {
@@ -84,7 +81,9 @@ namespace DCFApixels.DragonECS
         }
         public void Inject(Type fieldType, object obj)
         {
-            _notInjected.Remove(fieldType);
+            if (!_isPreInitInjectionComplete)
+                _notInjected.Remove(fieldType);
+
             Type baseType = fieldType.BaseType;
             if (baseType != null)
                 Inject(baseType, obj);
@@ -114,9 +113,7 @@ namespace DCFApixels.DragonECS
                         EcsDebug.Print(EcsConsts.DEBUG_ERROR_TAG, $"The {systemRecord.Attribute.notNullDummyType} dummy cannot be assigned to the {systemRecord.property.PropertyType.Name} field");
                         continue;
                     }
-
-                    systemRecord.property.Inject(systemRecord.target,
-                        _dummyInstance.MakeGenericType(systemRecord.Attribute.notNullDummyType).GetField("intsance", BindingFlags.Static | BindingFlags.Public).GetValue(null));
+                    systemRecord.property.Inject(systemRecord.target, DummyInstance.GetInstance(systemRecord.Attribute.notNullDummyType));
                 }
             }
             WarningMissedInjections();
@@ -135,6 +132,11 @@ namespace DCFApixels.DragonECS
 #endif
         }
 
+        public void OnPreInitInjectionComplete()
+        {
+            _isPreInitInjectionComplete = true;
+        }
+
         private readonly struct InjectedPropertyRecord
         {
             public readonly IEcsProcess target;
@@ -149,58 +151,29 @@ namespace DCFApixels.DragonECS
     }
 
     [DebugHide, DebugColor(DebugColor.Gray)]
-    public class AutoInjectSystem : IEcsPreInitProcess, IEcsPreInject, IEcsPreInitInjectProcess
+    public class AutoInjectSystem : IEcsPreInject, IEcsInject<EcsPipeline>, IEcsPreInitInjectProcess
     {
         private EcsPipeline _pipeline;
-        private List<object> _injectQueue = new List<object>();
+        private List<object> _delayedInjects = new List<object>();
         private AutoInjectionMap _autoInjectionMap;
-        private bool _isPreInjectionComplete = false;
+        public void Inject(EcsPipeline obj) => _pipeline = obj;
         public void PreInject(object obj)
         {
-            if (_pipeline == null)
-            {
-                _injectQueue.Add(obj);
-                return;
-            }
-            AutoInject(obj);
+            _delayedInjects.Add(obj);
         }
-        public void PreInit(EcsPipeline pipeline)
-        {
-            _pipeline = pipeline;
-            _autoInjectionMap = new AutoInjectionMap(_pipeline);
-
-            foreach (var obj in _injectQueue)
-            {
-                AutoInject(obj);
-            }
-            _injectQueue.Clear();
-            _injectQueue = null;
-            if (_isPreInjectionComplete)
-            {
-                _autoInjectionMap.InjectDummy();
-            }
-        }
-
-        private void AutoInject(object obj)
-        {
-            _autoInjectionMap.Inject(obj.GetType(), obj);
-        }
-
         public void OnPreInitInjectionBefore() { }
         public void OnPreInitInjectionAfter()
         {
-            _isPreInjectionComplete = true;
-            if (_autoInjectionMap != null)
-            {
-                _autoInjectionMap.InjectDummy();
-            }
-            ClearUsless();
-        }
+            _autoInjectionMap = new AutoInjectionMap(_pipeline);
 
-        private void ClearUsless()
-        {
-            _autoInjectionMap = null;
-            GC.Collect(0); //Собрать все хламовые мини классы созданне временно 
+            foreach (var obj in _delayedInjects)
+                _autoInjectionMap.Inject(obj.GetType(), obj);
+            _autoInjectionMap.InjectDummy();
+            _autoInjectionMap.OnPreInitInjectionComplete();
+
+            _delayedInjects.Clear();
+            _delayedInjects = null;
+            GC.Collect(0);
         }
     }
 
