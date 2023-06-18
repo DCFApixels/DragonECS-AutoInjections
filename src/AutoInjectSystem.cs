@@ -156,15 +156,20 @@ namespace DCFApixels.DragonECS
         private EcsPipeline _pipeline;
         private List<object> _delayedInjects = new List<object>();
         private AutoInjectionMap _autoInjectionMap;
+        private bool _preInitInjectCompleted = false;
         public void Inject(EcsPipeline obj) => _pipeline = obj;
         public void PreInject(object obj)
         {
-            _delayedInjects.Add(obj);
+            if(!_preInitInjectCompleted)
+                _delayedInjects.Add(obj);
+            else
+                _autoInjectionMap.Inject(obj.GetType(), obj);
         }
         public void OnPreInitInjectionBefore() { }
         public void OnPreInitInjectionAfter()
         {
             _autoInjectionMap = new AutoInjectionMap(_pipeline);
+            _preInitInjectCompleted = true;
 
             foreach (var obj in _delayedInjects)
                 _autoInjectionMap.Inject(obj.GetType(), obj);
