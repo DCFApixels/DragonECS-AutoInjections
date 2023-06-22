@@ -22,7 +22,7 @@
    * [В виде исходников](#В-виде-иходников)
 * [Интеграция](#Интеграция)
 * [Инъекция зависимостей](#Инъекция-зависимостей)
-* [Auto Builder субъектов](#Auto-Builder-субъектов)
+* [Auto Builder аспектов](#Auto-Builder-аспектов)
 * [Пример кода](#Пример-кода)
 * [Не null инъекции](#Не-null-инъекции)
 
@@ -68,18 +68,18 @@ EcsDefaultWorld _world;
 //Количество аргументов должно быть равно 1.
 [EcsInject] void InjectWorld(EcsDefaultWorld world) => _world = world;
 ```
-# Auto Builder субъектов
-Так же AutoInjections упрощает построение субъектов. Для начала наследуйте субъект не от `EcsSubject`, а от `EcsSubjectDI`, а далее добавьте специальные атрибуты.
+# Auto Builder аспектов
+Так же AutoInjections упрощает построение аспектов. Для начала наследуйте аспект не от `EcsAspect`, а от `EcsAspectAuto`, а далее добавьте специальные атрибуты.
 
 Атрибуты для инициализации полей с пулами: 
-* `[Inc]` - кеширует пул и добавит тип компонента в включающее ограничение субъекта, аналог метода `Include`;
-* `[Exc]` - кеширует пул и добавит тип компонента в исключающее ограничение субъекта, аналог метода `Exclude`;
+* `[Inc]` - кеширует пул и добавит тип компонента в включающее ограничение аспекта, аналог метода `Include`;
+* `[Exc]` - кеширует пул и добавит тип компонента в исключающее ограничение аспекта, аналог метода `Exclude`;
 * `[Opt]` - только кеширует пул, аналог метода `Optional`;
 
-Атрибут для комбинирования субъектов:
-* `[Combine(order)]` - кеширует субъект и скомбинирует ограничения субъектов, аналог метода `Combine`, аргумент `order` задает порядок комбинирования, по умлочанию `order = 0`;
+Атрибут для комбинирования аспектов:
+* `[Combine(order)]` - кеширует аспект и скомбинирует ограничения аспектов, аналог метода `Combine`, аргумент `order` задает порядок комбинирования, по умлочанию `order = 0`;
 
-Дополнительные атрибуты только для задания ограничений субъекта. Их можно применить к самому субъекту, либо к любому полю внутри. Используйте атрибуты: 
+Дополнительные атрибуты только для задания ограничений аспекта. Их можно применить к самому аспекту, либо к любому полю внутри. Используйте атрибуты: 
 * `[IncImplicit(type)]` - добавит в включающее ограничение указанный в конструкторе тип `type`, аналог метода `Include`;
 * `[ExcImplicit(type)]` - добавит в исключающее ограничение указанный в конструкторе тип `type`, аналог метода `Exclude`;
 
@@ -87,7 +87,7 @@ EcsDefaultWorld _world;
 ```csharp
 class VelocitySystemDI : IEcsRunProcess
 {
-    class Subject : EcsSubjectDI
+    class Aspect : EcsAspectAuto
     {
         [ExcImplicit(typeof(FreezedTag))]
         [Inc] public EcsPool<Pose> poses;
@@ -99,9 +99,9 @@ class VelocitySystemDI : IEcsRunProcess
 
     public void Run(EcsPipeline pipeline)
     {
-        foreach (var e in _world.Where(out Subject s))
+        foreach (var e in _world.Where(out Aspect a))
         {
-            s.poses.Write(e).position += s.velocities.Read(e).value * _time.DeltaTime;
+            s.poses.Write(e).position += a.velocities.Read(e).value * _time.DeltaTime;
         }
     }
 }
@@ -112,11 +112,11 @@ class VelocitySystemDI : IEcsRunProcess
 ```csharp
 class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
 {
-    class Subject : EcsSubject
+    class Aspect : EcsAspect
     {
         public EcsPool<Pose> poses;
         public EcsPool<Velocity> velocities;
-        public Subject(Builder b)
+        public Aspect(Builder b)
         {
             b.Exclude<FreezedTag>();
             poses = b.Include<Pose>();
@@ -132,9 +132,9 @@ class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<T
 
     public void Run(EcsPipeline pipeline)
     {
-        foreach (var e in _world.Where(out Subject s))
+        foreach (var e in _world.Where(out Aspect a))
         {
-            s.poses.Write(e).position += s.velocities.Read(e).value * _time.DeltaTime;
+            s.poses.Write(e).position += a.velocities.Read(e).value * _time.DeltaTime;
         }
     }
 }
