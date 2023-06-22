@@ -24,7 +24,7 @@ DragonECS uses this versioning semantics: [Open](https://gist.github.com/DCFApix
 ```csharp
 class VelocitySystemDI : IEcsRunProcess
 {
-    class Subject : EcsSubjectDI
+    class Aspect : EcsAspectAuto
     {
         [ExcImplicit(typeof(FreezedTag))]
         [Inc] public EcsPool<Pose> poses;
@@ -36,7 +36,7 @@ class VelocitySystemDI : IEcsRunProcess
 
     public void Run(EcsPipeline pipeline)
     {
-        foreach (var e in _world.Where(out Subject s))
+        foreach (var e in _world.Where(out Aspect s))
         {
             s.poses.Write(e).position += s.velocities.Read(e).value * _time.DeltaTime;
         }
@@ -49,11 +49,11 @@ class VelocitySystemDI : IEcsRunProcess
 ```csharp
 class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
 {
-    class Subject : EcsSubject
+    class Aspect : EcsAspect
     {
         public EcsPool<Pose> poses;
         public EcsPool<Velocity> velocities;
-        public Subject(Builder b)
+        public Aspect(Builder b)
         {
             b.Exclude<FreezedTag>();
             poses = b.Include<Pose>();
@@ -69,7 +69,7 @@ class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<T
 
     public void Run(EcsPipeline pipeline)
     {
-        foreach (var e in _world.Where(out Subject s))
+        foreach (var e in _world.Where(out Aspect s))
         {
             s.poses.Write(e).position += s.velocities.Read(e).value * _time.DeltaTime;
         }
