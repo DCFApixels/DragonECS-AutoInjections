@@ -3,19 +3,19 @@ using System.Reflection;
 
 namespace DCFApixels.DragonECS
 {
-    public abstract class EcsSubjectDI : EcsSubject
+    public abstract class EcsAspectAuto : EcsAspect
     {
         protected sealed override void Init(Builder b)
         {
-            EcsSubjectDIHelper.Fill(this, b);
+            EcsAspectAutoHelper.Fill(this, b);
             InitAfterDI(b);
         }
         protected virtual void InitAfterDI(Builder b) { }
     }
 
-    internal static class EcsSubjectDIHelper
+    internal static class EcsAspectAutoHelper
     {
-        public static void Fill(EcsSubject s, EcsSubject.Builder b)
+        public static void Fill(EcsAspect s, EcsAspect.Builder b)
         {
             Type builderType = b.GetType();
             MethodInfo incluedMethod = builderType.GetMethod("Include", BindingFlags.Instance | BindingFlags.Public);
@@ -25,9 +25,9 @@ namespace DCFApixels.DragonECS
             MethodInfo excludeImplicitMethod = builderType.GetMethod("ExcludeImplicit", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             MethodInfo combineMethod = builderType.GetMethod("Combine", BindingFlags.Instance | BindingFlags.Public);
 
-            Type subjectType = s.GetType();
+            Type aspectType = s.GetType();
 
-            foreach (var attribute in subjectType.GetCustomAttributes<ImplicitInjectAttribute>())//TODO убрать дублирование кода - вынести в отедльный метод
+            foreach (var attribute in aspectType.GetCustomAttributes<ImplicitInjectAttribute>())//TODO убрать дублирование кода - вынести в отедльный метод
             {
                 if (attribute is IncImplicitAttribute incImplicit)
                 {
@@ -48,7 +48,7 @@ namespace DCFApixels.DragonECS
             }//TODO КОНЕЦ убрать дублирование кода - вынести в отедльный метод
 
 
-            FieldInfo[] fieldInfos = subjectType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            FieldInfo[] fieldInfos = aspectType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             foreach (FieldInfo fieldInfo in fieldInfos)
             {
                 Type fieldType = fieldInfo.FieldType;
