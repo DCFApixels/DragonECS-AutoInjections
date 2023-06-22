@@ -46,7 +46,8 @@ namespace DCFApixels.DragonECS
                 .Where(o => o.GetCustomAttribute<EcsInjectAttribute>() != null)
                 .Select(o => new InjectedField(o)));
             result.AddRange(type.GetProperties(bindingFlags)
-                .Where(o => {
+                .Where(o =>
+                {
                     if (o.GetCustomAttribute<EcsInjectAttribute>() == null)
                         return false;
 #if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
@@ -57,7 +58,8 @@ namespace DCFApixels.DragonECS
                 })
                 .Select(o => new InjectedProperty(o)));
             result.AddRange(type.GetMethods(bindingFlags)
-                .Where(o => {
+                .Where(o =>
+                {
                     if (o.GetCustomAttribute<EcsInjectAttribute>() == null)
                         return false;
 #if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
@@ -160,7 +162,7 @@ namespace DCFApixels.DragonECS
         public void Inject(EcsPipeline obj) => _pipeline = obj;
         public void PreInject(object obj)
         {
-            if(!_preInitInjectCompleted)
+            if (!_preInitInjectCompleted)
                 _delayedInjects.Add(obj);
             else
                 _autoInjectionMap.Inject(obj.GetType(), obj);
