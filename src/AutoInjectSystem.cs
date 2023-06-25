@@ -1,8 +1,8 @@
+using DCFApixels.DragonECS.AutoInjectionsInternal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using static DCFApixels.DragonECS.EcsThrowHalper;
 
 namespace DCFApixels.DragonECS
 {
