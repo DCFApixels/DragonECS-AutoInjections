@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using static DCFApixels.DragonECS.EcsThrowHalper;
 
 namespace DCFApixels.DragonECS
 {
@@ -51,8 +52,7 @@ namespace DCFApixels.DragonECS
                     if (o.GetCustomAttribute<EcsInjectAttribute>() == null)
                         return false;
 #if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
-                    if (o.CanWrite == false)
-                        throw new EcsAutoInjectionException($"{o.Name} property is cant write");
+                    if (o.CanWrite == false) Throw.PropertyIsCantWrite(o);
 #endif
                     return true;
                 })
@@ -63,10 +63,8 @@ namespace DCFApixels.DragonECS
                     if (o.GetCustomAttribute<EcsInjectAttribute>() == null)
                         return false;
 #if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
-                    if (o.IsGenericMethod)
-                        throw new EcsAutoInjectionException($"{o.Name} method is Generic");
-                    if (o.GetParameters().Length != 1)
-                        throw new EcsAutoInjectionException($"{o.Name} method Arguments != 1");
+                    if (o.IsGenericMethod) Throw.MethodIsGeneric(o);
+                    if (o.GetParameters().Length != 1) Throw.MethodArgumentsGreater1(o);
 #endif
                     return true;
                 })
