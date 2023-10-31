@@ -38,14 +38,14 @@ namespace DCFApixels.DragonECS
             var methods = system.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             foreach (var method in methods)
             {
-                if(_builders.TryGetValue(method.Name, out var builder))
+                if (_builders.TryGetValue(method.Name, out var builder))
                 {
                     var process = builder(system, method);
-                    if(process != null)
+                    if (process != null)
                         self.Add(process, layerName);
                 }
             }
-            if(system is IEcsProcess systemInterface)
+            if (system is IEcsProcess systemInterface)
                 self.Add(systemInterface, layerName);
             return self;
         }
@@ -61,6 +61,13 @@ namespace DCFApixels.DragonECS
         {
             this.processMethodName = processMethodName;
             this.wrapperBuilderMethodName = wrapperBuilderMethodName;
+        }
+    }
+    public static class EcsAutoProcessUtility
+    {
+        public static TDelegate CreateDelegate<TDelegate>(object system, MethodInfo method) where TDelegate : Delegate
+        {
+            return (TDelegate)Delegate.CreateDelegate(typeof(TDelegate), system, method);
         }
     }
 
@@ -80,111 +87,145 @@ namespace DCFApixels.DragonECS
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Action CreateEmptyAction(object target, MethodInfo method)
         {
-            return (Action)Delegate.CreateDelegate(typeof(Action), target, method);
+            return EcsAutoProcessUtility.CreateDelegate<Action>(target, method);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Action<EcsPipeline> CreateAction(object target, MethodInfo method)
         {
-            return (Action<EcsPipeline>)Delegate.CreateDelegate(typeof(Action<EcsPipeline>), target, method);
+            return EcsAutoProcessUtility.CreateDelegate<Action<EcsPipeline>>(target, method);
         }
     }
-    internal class IEcsProcessEmptyWrapper : IEcsProcessWrapperBase, IEcsDebugName
+    internal class IEcsProcessEmptyWrapper : IEcsProcessWrapperBase, IEcsDebugMetaProvider
     {
         public object system;
         public Action a;
-        public string DebugName => EcsDebugUtility.GetNameForObject(system);
+        public object DebugMetaSource => system;
     }
-    internal class IEcsProcessWrapper : IEcsProcessWrapperBase, IEcsDebugName
+    internal class IEcsProcessWrapper : IEcsProcessWrapperBase, IEcsDebugMetaProvider
     {
         public object system;
         public Action<EcsPipeline> a;
-        public string DebugName => EcsDebugUtility.GetNameForObject(system);
+        public object DebugMetaSource => system;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     [EcsProcessWrapperBuilder(nameof(PreInit), nameof(Builder))]
-    internal class IEcsPreInitProcessEmptyWrapper : IEcsProcessEmptyWrapper, IEcsPreInitProcess
+    internal class EcsPreInitProcessEmptyWrapper : IEcsProcessEmptyWrapper, IEcsPreInitProcess
     {
-        public IEcsPreInitProcessEmptyWrapper(object target, Action a) { system = target; this.a = a; }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        public EcsPreInitProcessEmptyWrapper(object target, Action a) { system = target; this.a = a; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PreInit(EcsPipeline pipeline) => a();
         public static IEcsProcess Builder(object target, MethodInfo method)
         {
             if (target is IEcsPreInitProcess) return null;
             if (CheckParameters(method, out bool isHasParam))
-                if (isHasParam) new IEcsPreInitProcessWrapper(target, CreateAction(target, method));
-                else new IEcsPreInitProcessEmptyWrapper(target, CreateEmptyAction(target, method));
+                if (isHasParam) 
+                    return new EcsPreInitProcessWrapper(target, CreateAction(target, method));
+                else 
+                    return new EcsPreInitProcessEmptyWrapper(target, CreateEmptyAction(target, method));
             return null;
         }
     }
-    internal class IEcsPreInitProcessWrapper : IEcsProcessWrapper, IEcsPreInitProcess
+    internal class EcsPreInitProcessWrapper : IEcsProcessWrapper, IEcsPreInitProcess
     {
-        public IEcsPreInitProcessWrapper(object target, Action<EcsPipeline> a) { system = target; this.a = a; }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        public EcsPreInitProcessWrapper(object target, Action<EcsPipeline> a) { system = target; this.a = a; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PreInit(EcsPipeline pipeline) => a(pipeline);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     [EcsProcessWrapperBuilder(nameof(Init), nameof(Builder))]
-    internal class IEcsInitProcessEmptyWrapper : IEcsProcessEmptyWrapper, IEcsInitProcess
+    internal class EcsInitProcessEmptyWrapper : IEcsProcessEmptyWrapper, IEcsInitProcess
     {
-        public IEcsInitProcessEmptyWrapper(object target, Action a) { system = target; this.a = a; }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        public EcsInitProcessEmptyWrapper(object target, Action a) { system = target; this.a = a; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Init(EcsPipeline pipeline) => a();
         public static IEcsProcess Builder(object target, MethodInfo method)
         {
             if (target is IEcsInitProcess) return null;
             if (CheckParameters(method, out bool isHasParam))
-                if (isHasParam) new IEcsInitProcessWrapper(target, CreateAction(target, method));
-                else new IEcsInitProcessEmptyWrapper(target, CreateEmptyAction(target, method));
+                if (isHasParam) 
+                    return new EcsInitProcessWrapper(target, CreateAction(target, method));
+                else 
+                    return new EcsInitProcessEmptyWrapper(target, CreateEmptyAction(target, method));
             return null;
         }
     }
-    internal class IEcsInitProcessWrapper: IEcsProcessWrapper, IEcsInitProcess
+    internal class EcsInitProcessWrapper : IEcsProcessWrapper, IEcsInitProcess
     {
-        public IEcsInitProcessWrapper(object target, Action<EcsPipeline> a) { system = target; this.a = a; }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        public EcsInitProcessWrapper(object target, Action<EcsPipeline> a) { system = target; this.a = a; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Init(EcsPipeline pipeline) => a(pipeline);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     [EcsProcessWrapperBuilder(nameof(Run), nameof(Builder))]
-    internal class IEcsRunProcessEmptyWrapper : IEcsProcessEmptyWrapper, IEcsRunProcess
+    internal class EcsRunProcessEmptyWrapper : IEcsProcessEmptyWrapper, IEcsRunProcess
     {
-        public IEcsRunProcessEmptyWrapper(object target, Action a) { system = target; this.a = a; }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        public EcsRunProcessEmptyWrapper(object target, Action a) { system = target; this.a = a; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Run(EcsPipeline pipeline) => a();
         public static IEcsProcess Builder(object target, MethodInfo method)
         {
             if (target is IEcsRunProcess) return null;
             if (CheckParameters(method, out bool isHasParam))
-                if (isHasParam) new IEcsRunProcessWrapper(target, CreateAction(target, method));
-                else new IEcsRunProcessEmptyWrapper(target, CreateEmptyAction(target, method));
+                if (isHasParam) 
+                    return new EcsRunProcessWrapper(target, CreateAction(target, method));
+                else 
+                    return new EcsRunProcessEmptyWrapper(target, CreateEmptyAction(target, method));
             return null;
         }
     }
-    internal class IEcsRunProcessWrapper : IEcsProcessWrapper, IEcsRunProcess
+    internal class EcsRunProcessWrapper : IEcsProcessWrapper, IEcsRunProcess
     {
-        public IEcsRunProcessWrapper(object target, Action<EcsPipeline> a) { system = target; this.a = a; } 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        public EcsRunProcessWrapper(object target, Action<EcsPipeline> a) { system = target; this.a = a; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Run(EcsPipeline pipeline) => a(pipeline);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     [EcsProcessWrapperBuilder(nameof(Destroy), nameof(Builder))]
-    internal class IEcsDestroyProcessEmptyWrapper : IEcsProcessEmptyWrapper, IEcsDestroyProcess
+    internal class EcsDestroyProcessEmptyWrapper : IEcsProcessEmptyWrapper, IEcsDestroyProcess
     {
-        public IEcsDestroyProcessEmptyWrapper(object target, Action a) { system = target; this.a = a; }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        public EcsDestroyProcessEmptyWrapper(object target, Action a) { system = target; this.a = a; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Destroy(EcsPipeline pipeline) => a();
         public static IEcsProcess Builder(object target, MethodInfo method)
         {
             if (target is IEcsDestroyProcess) return null;
             if (CheckParameters(method, out bool isHasParam))
-                if (isHasParam) new IEcsDestroyProcessWrapper(target, CreateAction(target, method));
-                else new IEcsDestroyProcessEmptyWrapper(target, CreateEmptyAction(target, method));
+                if (isHasParam) 
+                    return new EcsDestroyProcessWrapper(target, CreateAction(target, method));
+                else 
+                    return new EcsDestroyProcessEmptyWrapper(target, CreateEmptyAction(target, method));
             return null;
         }
     }
-    internal class IEcsDestroyProcessWrapper : IEcsProcessWrapper, IEcsDestroyProcess
+    internal class EcsDestroyProcessWrapper : IEcsProcessWrapper, IEcsDestroyProcess
     {
-        public IEcsDestroyProcessWrapper(object target, Action<EcsPipeline> a) { system = target; this.a = a; }
+        public EcsDestroyProcessWrapper(object target, Action<EcsPipeline> a) { system = target; this.a = a; }
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public void Destroy(EcsPipeline pipeline) => a(pipeline);
+    }
+
+
+
+
+
+    public interface ISomeCustomeProcess : IEcsProcess
+    {
+        void DoSomething();
+    }
+    //Только при наличии этого атрибута будет вызван метод Builder который создаст обертку для DoSomething
+    [EcsProcessWrapperBuilder(nameof(DoSomething), nameof(Builder))]
+    internal class SomeCustomeProcessWrapper : ISomeCustomeProcess, IEcsDebugMetaProvider
+    {
+        public object system;
+        public Action action;
+        //IEcsDebugMetaProvider.DebugMetaSource используется чтобы для обертки отображалось данные из debug-атрибутов вроде DebugName 
+        public object DebugMetaSource => system;
+        public SomeCustomeProcessWrapper(object system, Action action) { this.system = system; this.action = action; }
+        public void DoSomething() => action();
+        public static IEcsProcess Builder(object system, MethodInfo method)
+        {
+            //Исключает те системы которые уже имеют интерфейс, иначе в рантайме вызов метода-процесса будет дублироваться
+            if (system is ISomeCustomeProcess) return null; //возвращение null
+            return new SomeCustomeProcessWrapper(system, EcsAutoProcessUtility.CreateDelegate<Action>(system, method));
+        }
     }
 }
