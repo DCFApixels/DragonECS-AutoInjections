@@ -1,4 +1,4 @@
-using DCFApixels.DragonECS.AutoInjectionsInternal;
+using DCFApixels.DragonECS.AutoInjections.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -150,7 +150,8 @@ namespace DCFApixels.DragonECS
         }
     }
 
-    [DebugHide, DebugColor(DebugColor.Gray)]
+    [MetaTags(MetaTags.HIDDEN)]
+    [MetaColor(MetaColor.Gray)]
     public class AutoInjectSystem : IEcsPreInject, IEcsInject<EcsPipeline>, IEcsPreInitInjectProcess
     {
         private EcsPipeline _pipeline;

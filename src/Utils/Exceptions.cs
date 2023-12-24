@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 
 namespace DCFApixels.DragonECS
 {
-    namespace AutoInjectionsInternal
+    namespace AutoInjections.Internal
     {
         internal static class Throw
         {
