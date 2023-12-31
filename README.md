@@ -34,7 +34,7 @@ class VelocitySystemDI : IEcsRunProcess
     [EcsInject] EcsDefaultWorld _world;
     [EcsInject] TimeService _time;
 
-    public void Run(EcsPipeline pipeline)
+    public void Run()
     {
         foreach (var e in _world.Where(out Aspect s))
         {
@@ -67,7 +67,7 @@ class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<T
     public void Inject(EcsDefaultWorld obj) => _world = obj;
     public void Inject(TimeService obj) => _time = obj;
 
-    public void Run(EcsPipeline pipeline)
+    public void Run()
     {
         foreach (var e in _world.Where(out Aspect s))
         {

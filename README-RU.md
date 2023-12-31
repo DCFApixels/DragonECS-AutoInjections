@@ -16,15 +16,16 @@
 Расширение призвано сократить объем кода, упростив инъекцию  зависимостей, делая их автоматически.
 > **ВАЖНО!** Проект в стадии разработки. API может меняться.
 # Оглавление
-* [Установка](#Установка)
-   * [Зависимости](#Зависимости)
-   * [Unity-модуль](#Unity-модуль)
-   * [В виде исходников](#В-виде-иходников)
-* [Интеграция](#Интеграция)
-* [Инъекция зависимостей](#Инъекция-зависимостей)
-* [Auto Builder аспектов](#Auto-Builder-аспектов)
-* [Пример кода](#Пример-кода)
-* [Не null инъекции](#Не-null-инъекции)
+- [Auto Injections for DragonECS](#auto-injections-for-dragonecs)
+- [Оглавление](#оглавление)
+- [Установка](#установка)
+    - [Зависимости](#зависимости)
+    - [Версионирование](#версионирование)
+- [Интеграция](#интеграция)
+- [Инъекция зависимостей](#инъекция-зависимостей)
+- [Auto Builder аспектов](#auto-builder-аспектов)
+- [Пример кода](#пример-кода)
+- [Не null инъекции](#не-null-инъекции)
 
 # Установка
 ### Зависимости
@@ -97,7 +98,7 @@ class VelocitySystemDI : IEcsRunProcess
     [EcsInject] EcsDefaultWorld _world;
     [EcsInject] TimeService _time;
 
-    public void Run(EcsPipeline pipeline)
+    public void Run()
     {
         foreach (var e in _world.Where(out Aspect a))
         {
@@ -130,7 +131,7 @@ class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<T
     public void Inject(EcsDefaultWorld obj) => _world = obj;
     public void Inject(TimeService obj) => _time = obj;
 
-    public void Run(EcsPipeline pipeline)
+    public void Run()
     {
         foreach (var e in _world.Where(out Aspect a))
         {
