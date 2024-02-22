@@ -141,10 +141,10 @@ namespace DCFApixels.DragonECS
 
         private readonly struct InjectedPropertyRecord
         {
-            public readonly IEcsSystem target;
+            public readonly IEcsProcess target;
             public readonly IInjectedProperty property;
             public EcsInjectAttribute Attribute => property.GetAutoInjectAttribute();
-            public InjectedPropertyRecord(IEcsSystem target, IInjectedProperty property)
+            public InjectedPropertyRecord(IEcsProcess target, IInjectedProperty property)
             {
                 this.target = target;
                 this.property = property;
@@ -154,33 +154,30 @@ namespace DCFApixels.DragonECS
 
     [MetaTags(MetaTags.HIDDEN)]
     [MetaColor(MetaColor.Gray)]
-    public class AutoInjectSystem : IEcsInject<object>, IEcsPipelineMember, IEcsPreInitInjectProcess
+    public class AutoInjectSystem : IEcsInject<object>, IEcsPipelineMember, IOnInitInjectionComplete
     {
         private EcsPipeline _pipeline;
         EcsPipeline IEcsPipelineMember.Pipeline { get => _pipeline; set => _pipeline = value; }
+
         private List<object> _delayedInjects = new List<object>();
         private AutoInjectionMap _autoInjectionMap;
-        private bool _preInitInjectCompleted = false;
-
+        private bool _isInitInjectionCompleted;
         public void Inject(object obj)
         {
-            if (!_preInitInjectCompleted)
-            {
-                _delayedInjects.Add(obj);
-            }
-            else
+            if (_isInitInjectionCompleted)
             {
                 _autoInjectionMap.Inject(obj.GetType(), obj);
             }
+            else
+            {
+                _delayedInjects.Add(obj);
+            }
         }
-        public void OnPreInitInjectionBefore(EcsPipeline pipeline)
-        {
-            _pipeline = pipeline;
-        }
-        public void OnPreInitInjectionAfter()
+
+        public void OnInitInjectionComplete()
         {
             _autoInjectionMap = new AutoInjectionMap(_pipeline);
-            _preInitInjectCompleted = true;
+            _isInitInjectionCompleted = true;
 
             foreach (var obj in _delayedInjects)
             {
