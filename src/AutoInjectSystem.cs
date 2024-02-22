@@ -37,7 +37,9 @@ namespace DCFApixels.DragonECS
                 }
             }
             foreach (var item in _systemProoperties.Keys)
+            {
                 _notInjected.Add(item);
+            }
         }
 
         private static void Do(Type type, List<IInjectedProperty> result)
@@ -139,10 +141,10 @@ namespace DCFApixels.DragonECS
 
         private readonly struct InjectedPropertyRecord
         {
-            public readonly IEcsProcess target;
+            public readonly IEcsSystem target;
             public readonly IInjectedProperty property;
             public EcsInjectAttribute Attribute => property.GetAutoInjectAttribute();
-            public InjectedPropertyRecord(IEcsProcess target, IInjectedProperty property)
+            public InjectedPropertyRecord(IEcsSystem target, IInjectedProperty property)
             {
                 this.target = target;
                 this.property = property;
@@ -152,28 +154,38 @@ namespace DCFApixels.DragonECS
 
     [MetaTags(MetaTags.HIDDEN)]
     [MetaColor(MetaColor.Gray)]
-    public class AutoInjectSystem : IEcsPreInject, IEcsInject<EcsPipeline>, IEcsPreInitInjectProcess
+    public class AutoInjectSystem : IEcsInject<object>, IEcsPipelineMember, IEcsPreInitInjectProcess
     {
         private EcsPipeline _pipeline;
+        EcsPipeline IEcsPipelineMember.Pipeline { get => _pipeline; set => _pipeline = value; }
         private List<object> _delayedInjects = new List<object>();
         private AutoInjectionMap _autoInjectionMap;
         private bool _preInitInjectCompleted = false;
-        public void Inject(EcsPipeline obj) => _pipeline = obj;
-        public void PreInject(object obj)
+
+        public void Inject(object obj)
         {
             if (!_preInitInjectCompleted)
+            {
                 _delayedInjects.Add(obj);
+            }
             else
+            {
                 _autoInjectionMap.Inject(obj.GetType(), obj);
+            }
         }
-        public void OnPreInitInjectionBefore() { }
+        public void OnPreInitInjectionBefore(EcsPipeline pipeline)
+        {
+            _pipeline = pipeline;
+        }
         public void OnPreInitInjectionAfter()
         {
             _autoInjectionMap = new AutoInjectionMap(_pipeline);
             _preInitInjectCompleted = true;
 
             foreach (var obj in _delayedInjects)
+            {
                 _autoInjectionMap.Inject(obj.GetType(), obj);
+            }
             _autoInjectionMap.InjectDummy();
             _autoInjectionMap.OnPreInitInjectionComplete();
 
