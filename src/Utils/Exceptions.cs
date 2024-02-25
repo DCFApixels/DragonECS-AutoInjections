@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security;
 
 namespace DCFApixels.DragonECS
 {
@@ -23,6 +24,11 @@ namespace DCFApixels.DragonECS
             {
                 //method X has arguments greater than 1.
                 throw new EcsAutoInjectionException($"{obj.Name} method Arguments != 1");
+            }
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            internal static void UndefinedException()
+            {
+                throw new Exception();
             }
         }
     }
