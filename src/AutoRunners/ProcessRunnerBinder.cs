@@ -6,7 +6,7 @@ namespace DCFApixels.DragonECS
 {
     public static class ProcessRunnerBinder
     {
-        private static MethodInfo _declareRunnerMethod = typeof(EcsPipeline).GetMethod(nameof(EcsPipeline.DeclareRunner));
+        private static MethodInfo _declareRunnerMethod = typeof(EcsPipeline).GetMethod(nameof(EcsPipeline.GetRunnerInstance));
         public static T GetRunnerAuto<T>(this EcsPipeline self) where T : IEcsProcess
         {
             if(self.TryGetRunner(out T process))
