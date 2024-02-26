@@ -9,7 +9,7 @@ namespace DCFApixels.DragonECS
         private static MethodInfo _declareRunnerMethod = typeof(EcsPipeline).GetMethod(nameof(EcsPipeline.GetRunnerInstance));
         public static T GetRunnerAuto<T>(this EcsPipeline self) where T : IEcsProcess
         {
-            if(self.TryGetRunner(out T process))
+            if (self.TryGetRunner(out T process))
             {
                 return process;
             }
@@ -19,7 +19,7 @@ namespace DCFApixels.DragonECS
                 Type runnerType = atr.runnerType;
                 if (type.IsGenericType)
                 {
-                    if(runnerType.IsGenericType == false || 
+                    if (runnerType.IsGenericType == false ||
                         runnerType.IsGenericTypeDefinition == false)
                     {
                         Throw.UndefinedException();
