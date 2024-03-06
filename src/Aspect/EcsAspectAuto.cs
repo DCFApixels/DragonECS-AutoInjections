@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCFApixels.DragonECS.AutoInjections.Internal;
+using System;
 using System.Reflection;
 
 namespace DCFApixels.DragonECS
@@ -74,7 +75,9 @@ namespace DCFApixels.DragonECS
                 }//TODO КОНЕЦ убрать дублирование кода - вынести в отедльный метод
 
                 if (!fieldInfo.TryGetCustomAttribute(out InjectAttribute injectAttribute))
+                {
                     continue;
+                }
 
                 if (injectAttribute is IncAttribute)
                 {
