@@ -24,6 +24,7 @@
 - [Интеграция](#интеграция)
 - [Инъекция зависимостей](#инъекция-зависимостей)
 - [Auto Builder аспектов](#auto-builder-аспектов)
+- [Auto Runner-ы](#auto-runner-ы)
 - [Пример кода](#пример-кода)
 - [Не null инъекции](#не-null-инъекции)
 
@@ -84,9 +85,32 @@ EcsDefaultWorld _world;
 * `[IncImplicit(type)]` - добавит в включающее ограничение указанный в конструкторе тип `type`, аналог метода `Include`;
 * `[ExcImplicit(type)]` - добавит в исключающее ограничение указанный в конструкторе тип `type`, аналог метода `Exclude`;
 
+# Auto Runner-ы
+Для получения раннеров без добавления, есть атрибут `[BindWithRunner(type)]` и метод `GetRunnerAuto<T>()`. 
+``` c#
+[BindWithRunner(typeof(DoSomethingProcessRunner))]
+interface IDoSomethingProcess : IEcsProcess
+{
+    void Do();
+}
+//Реализация раннера. Пример реализации можно так же посмотреть в встроенных процессах 
+sealed class DoSomethingProcessRunner : EcsRunner<IDoSomethingProcess>, IDoSomethingProcess
+{
+    public void Do() 
+    {
+        foreach (var item in Process) item.Do();
+    }
+}
+
+//...
+// Если в пайплайн небыл добавлен раннер, то GetRunnerAuto автоматически добавит экземпляр DoSomethingProcessRunner.
+_pipeline.GetRunnerAuto<IDoSomethingProcess>().Do();
+```
+
+
 # Пример кода
 ```csharp
-class VelocitySystemDI : IEcsRunProcess
+class VelocitySystemDI : IEcsRun
 {
     class Aspect : EcsAspectAuto
     {
@@ -111,7 +135,7 @@ class VelocitySystemDI : IEcsRunProcess
 <summary>Тот же код но без AutoInjections</summary>
     
 ```csharp
-class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
+class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
 {
     class Aspect : EcsAspect
     {
