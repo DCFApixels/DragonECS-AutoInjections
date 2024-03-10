@@ -17,8 +17,32 @@ The extension is designed to reduce the amount of code by simplifying dependency
 > **NOTICE:** The project is a work in progress, API may change.  
 > While the English version of the README is incomplete, you can view the [Russian version](https://github.com/DCFApixels/DragonECS-AutoInjections/blob/main/README-RU.md).
 
-# Versioning
-DragonECS uses this versioning semantics: [Open](https://gist.github.com/DCFApixels/c3b178a308b411f530361d1d56f1f929#versioning)
+
+</br>
+
+# Installation
+Versioning semantics - [Open](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
+## Environment
+Requirements:
++ Dependency: [DragonECS](https://github.com/DCFApixels/DragonECS)
++ Minimum version of C# 7.3;
+  
+Optional:
++ Game engines with C#: Unity, Godot, MonoGame, etc.
+  
+Tested with:
++ **Unity:** Minimum version 2020.1.0;
+
+## Unity Installation
+* ### Unity Package
+The framework can be installed as a Unity package by adding the Git URL [in the PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) or manually adding it to `Packages/manifest.json`: 
+```
+https://github.com/DCFApixels/DragonECS-AutoInjections.git
+```
+* ### Source Code
+The framework can also be added to the project as source code.
+
+</br>
 
 # Code Example
 ```csharp
