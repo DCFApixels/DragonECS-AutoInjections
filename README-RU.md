@@ -5,7 +5,7 @@
 <p align="center">
 <img alt="Version" src="https://img.shields.io/github/package-json/v/DCFApixels/DragonECS-AutoInjections?color=%23ff4e85&style=for-the-badge">
 <img alt="License" src="https://img.shields.io/github/license/DCFApixels/DragonECS-AutoInjections?color=ff4e85&style=for-the-badge">
-<!--<img alt="Discord" src="https://img.shields.io/discord/1111696966208999525?color=%23ff4e85&label=Discord&logo=Discord&logoColor=%23ff4e85&style=for-the-badge">-->
+<a href="https://discord.gg/kqmJjExuCf"><img alt="Discord" src="https://img.shields.io/discord/1111696966208999525?color=%2300b269&label=Discord&logo=Discord&logoColor=%23ffffff&style=for-the-badge"></a>
 </p>
 
 # Auto Injections for [DragonECS](https://github.com/DCFApixels/DragonECS)
@@ -16,11 +16,7 @@
 Расширение призвано сократить объем кода, упростив инъекцию  зависимостей, делая их автоматически.
 > **ВАЖНО!** Проект в стадии разработки. API может меняться.
 # Оглавление
-- [Auto Injections for DragonECS](#auto-injections-for-dragonecs)
-- [Оглавление](#оглавление)
 - [Установка](#установка)
-    - [Зависимости](#зависимости)
-    - [Версионирование](#версионирование)
 - [Интеграция](#интеграция)
 - [Инъекция зависимостей](#инъекция-зависимостей)
 - [Auto Builder аспектов](#auto-builder-аспектов)
@@ -28,19 +24,31 @@
 - [Пример кода](#пример-кода)
 - [Не null инъекции](#не-null-инъекции)
 
+</br>
+
 # Установка
-### Зависимости
-Убедитесь что в проекте установлен фреймворк [DragonECS](https://github.com/DCFApixels/DragonECS).
+Семантика версионирования - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
+## Окружение
+Обязательные требования:
++ Зависимость: [DragonECS](https://github.com/DCFApixels/DragonECS)
++ Минимальная версия C# 7.3;
+
+Опционально:
++ Игровые движки с C#: Unity, Godot, MonoGame и т.д.
+
+Протестированно:
++ **Unity:** Минимальная версия 2020.1.0;
+
+## Установка для Unity
 * ### Unity-модуль
 Поддерживается установка в виде Unity-модуля в  при помощи добавления git-URL [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json`: 
 ```
 https://github.com/DCFApixels/DragonECS-AutoInjections.git
 ```
-* ### В виде исходников
-Фреймворк так же может быть добавлен в проект в виде исходников. 
+* ### В виде иходников
+Фреймворк так же может быть добавлен в проект в виде исходников.
 
-### Версионирование
-В DragonECS применяется следующая семантика версионирования: [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
+</br>
 
 # Интеграция
 Добавьте вызов метода `AutoInject()` для Builder-а пайплайна. Пример:
@@ -54,7 +62,9 @@ _pipeline = EcsPipeline.New()
     .AutoInject() // Готово, автоматические внедрения активированы
     .BuildAndInit();
 ```
-  
+
+</br>
+
 # Инъекция зависимостей
 Атрибут `[EcsInject]` убирает необходимость использования интерфейса `IEcsInject<T>`, поля помеченные таким атрибутом автоматически подхватят зависимости внедренные в Pipeline. Пример： 
 ```csharp
@@ -70,6 +80,9 @@ EcsDefaultWorld _world;
 //Количество аргументов должно быть равно 1.
 [EcsInject] void InjectWorld(EcsDefaultWorld world) => _world = world;
 ```
+
+</br>
+
 # Auto Builder аспектов
 Так же AutoInjections упрощает построение аспектов. Для начала наследуйте аспект не от `EcsAspect`, а от `EcsAspectAuto`, а далее добавьте специальные атрибуты.
 
@@ -84,6 +97,8 @@ EcsDefaultWorld _world;
 Дополнительные атрибуты только для задания ограничений аспекта. Их можно применить к самому аспекту, либо к любому полю внутри. Используйте атрибуты: 
 * `[IncImplicit(type)]` - добавит в включающее ограничение указанный в конструкторе тип `type`, аналог метода `Include`;
 * `[ExcImplicit(type)]` - добавит в исключающее ограничение указанный в конструкторе тип `type`, аналог метода `Exclude`;
+
+</br>
 
 # Auto Runner-ы
 Для получения раннеров без добавления, есть атрибут `[BindWithRunner(type)]` и метод `GetRunnerAuto<T>()`. 
@@ -107,6 +122,7 @@ sealed class DoSomethingProcessRunner : EcsRunner<IDoSomethingProcess>, IDoSomet
 _pipeline.GetRunnerAuto<IDoSomethingProcess>().Do();
 ```
 
+</br>
 
 # Пример кода
 ```csharp
@@ -167,6 +183,8 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
 
 </details>
     
+</br>
+
 # Не null инъекции
 
 Чтобы поле помеченное `[EcsInject]` было проинициализированно даже в случае отстувия инъекции, в конструктор атрибута можно передать тип болванку. В примере ниже поле `foo` получит экземпляр класса `Foo` из инъекции или экземпляр `FooDummy : Foo` если инъекции небыло.
