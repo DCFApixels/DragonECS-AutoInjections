@@ -3,7 +3,7 @@
     "author": 
     {
         "name": "DCFApixels",
-        "url": "https://github.com/DCFApixels/DragonECS-AutoInjections"
+        "url": "https://github.com/DCFApixels"
     },
     "displayName": "DragonECS-AutoInjections",
     "description": "Auto Injections for DragonECS",
@@ -13,6 +13,10 @@
         "type": "git",
         "url": "https://github.com/DCFApixels/DragonECS-AutoInjections.git"
     },
+    "dependencies": {
+        "com.dcfa_pixels.dragonecs": "https://github.com/DCFApixels/DragonECS.git" 
+    },
+
     "keywords":
     [
         "ecs",
