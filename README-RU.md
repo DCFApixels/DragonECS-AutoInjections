@@ -142,7 +142,7 @@ class VelocitySystemDI : IEcsRun
     {
         foreach (var e in _world.Where(out Aspect a))
         {
-            s.poses.Write(e).position += a.velocities.Read(e).value * _time.DeltaTime;
+            a.poses.Get(e).position += a.velocities.Read(e).value * _time.DeltaTime;
         }
     }
 }
@@ -175,7 +175,7 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
     {
         foreach (var e in _world.Where(out Aspect a))
         {
-            s.poses.Write(e).position += a.velocities.Read(e).value * _time.DeltaTime;
+            a.poses.Get(e).position += a.velocities.Read(e).value * _time.DeltaTime;
         }
     }
 }
