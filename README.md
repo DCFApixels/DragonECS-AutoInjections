@@ -46,7 +46,7 @@ The framework can also be added to the project as source code.
 
 # Code Example
 ```csharp
-class VelocitySystemDI : IEcsRunProcess
+class VelocitySystemDI : IEcsRun
 {
     class Aspect : EcsAspectAuto
     {
@@ -60,9 +60,9 @@ class VelocitySystemDI : IEcsRunProcess
 
     public void Run()
     {
-        foreach (var e in _world.Where(out Aspect s))
+        foreach (var e in _world.Where(out Aspect a))
         {
-            s.poses.Write(e).position += s.velocities.Read(e).value * _time.DeltaTime;
+            a.poses.Get(e).position += a.velocities.Read(e).value * _time.DeltaTime;
         }
     }
 }
@@ -71,7 +71,7 @@ class VelocitySystemDI : IEcsRunProcess
 <summary>Same code but without AutoInjections</summary>
     
 ```csharp
-class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
+class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
 {
     class Aspect : EcsAspect
     {
@@ -93,9 +93,9 @@ class VelocitySystem : IEcsRunProcess, IEcsInject<EcsDefaultWorld>, IEcsInject<T
 
     public void Run()
     {
-        foreach (var e in _world.Where(out Aspect s))
+        foreach (var e in _world.Where(out Aspect a))
         {
-            s.poses.Write(e).position += s.velocities.Read(e).value * _time.DeltaTime;
+            a.poses.Get(e).position += a.velocities.Read(e).value * _time.DeltaTime;
         }
     }
 }
