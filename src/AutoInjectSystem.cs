@@ -154,6 +154,7 @@ namespace DCFApixels.DragonECS
 
     [MetaTags(MetaTags.HIDDEN)]
     [MetaColor(MetaColor.Gray)]
+    [MetaGroup(EcsConsts.FRAMEWORK_NAME)]
     public class AutoInjectSystem : IEcsInject<object>, IEcsPipelineMember, IOnInitInjectionComplete
     {
         private EcsPipeline _pipeline;
