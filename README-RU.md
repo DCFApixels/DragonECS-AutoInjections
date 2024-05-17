@@ -70,7 +70,7 @@ _pipeline = EcsPipeline.New()
 ```csharp
 [EcsInject] EcsDefaultWorld _world;
 ```
-Так же можно делать внедрение через свойство или метод
+Так же можно делать внедрение через свойство или метод:
 ```csharp
 EcsDefaultWorld _world;
 
@@ -80,6 +80,8 @@ EcsDefaultWorld _world;
 //Количество аргументов должно быть равно 1.
 [EcsInject] void InjectWorld(EcsDefaultWorld world) => _world = world;
 ```
+
+> Поддерживается агрессивная инъекция, инъекция будет произведена без атрибута `[EcsInject]`, для этого нужно вызвать `.AutoInject(true)`.
 
 </br>
 
