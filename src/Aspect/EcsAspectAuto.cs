@@ -74,7 +74,7 @@ namespace DCFApixels.DragonECS
                     }
                 }//TODO КОНЕЦ убрать дублирование кода - вынести в отедльный метод
 
-                if (!fieldInfo.TryGetCustomAttribute(out InjectAttribute injectAttribute))
+                if (!fieldInfo.TryGetCustomAttribute(out InjectAspectMemberAttribute injectAttribute))
                 {
                     continue;
                 }

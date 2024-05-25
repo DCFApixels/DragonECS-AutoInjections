@@ -4,15 +4,15 @@ using System.Linq;
 
 namespace DCFApixels.DragonECS
 {
-    public abstract class InjectAttribute : Attribute { }
+    public abstract class InjectAspectMemberAttribute : Attribute { }
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public sealed class IncAttribute : InjectAttribute { }
+    public sealed class IncAttribute : InjectAspectMemberAttribute { }
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public sealed class ExcAttribute : InjectAttribute { }
+    public sealed class ExcAttribute : InjectAspectMemberAttribute { }
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public sealed class OptAttribute : InjectAttribute { }
+    public sealed class OptAttribute : InjectAspectMemberAttribute { }
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public sealed class CombineAttribute : InjectAttribute
+    public sealed class CombineAttribute : InjectAspectMemberAttribute
     {
         public readonly int order = 0;
         public CombineAttribute(int order = 0) => this.order = order;
