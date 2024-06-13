@@ -1,3 +1,4 @@
+using DCFApixels.DragonECS.AutoInjections;
 using DCFApixels.DragonECS.AutoInjections.Internal;
 using System;
 using System.Collections.Generic;
@@ -183,7 +184,8 @@ namespace DCFApixels.DragonECS
 
     [MetaTags(MetaTags.HIDDEN)]
     [MetaColor(MetaColor.Gray)]
-    [MetaGroup(EcsConsts.FRAMEWORK_NAME)]
+    [MetaGroup(EcsAutoInjectionsConsts.PACK_GROUP, EcsConsts.DI_GROUP)]
+    [MetaDescription(EcsConsts.AUTHOR, "The system responsible for the processing of automatic injections. The .AutoInject() method adds an AutoInjectSystem to the systems pipelines.")]
     public class AutoInjectSystem : IEcsInject<object>, IEcsPipelineMember, IOnInitInjectionComplete
     {
         private EcsPipeline _pipeline;
