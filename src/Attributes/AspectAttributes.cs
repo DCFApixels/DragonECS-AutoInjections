@@ -15,7 +15,7 @@ namespace DCFApixels.DragonECS
     public sealed class CombineAttribute : InjectAspectMemberAttribute
     {
         public readonly int order = 0;
-        public CombineAttribute(int order = 0) => this.order = order;
+        public CombineAttribute(int order = 0) { this.order = order; }
     }
 
     public abstract class ImplicitInjectAttribute : Attribute { }
