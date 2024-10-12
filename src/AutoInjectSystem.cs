@@ -243,7 +243,7 @@ namespace DCFApixels.DragonECS
         private FieldInfo _member;
         private EcsInjectAttribute _injectAttribute;
         public bool IsInjected { get; private set; }
-        public Type PropertyType => _member.FieldType;
+        public Type PropertyType { get { return _member.FieldType; } }
         public InjectedField(FieldInfo member)
         {
             _member = member;
@@ -262,7 +262,7 @@ namespace DCFApixels.DragonECS
         private PropertyInfo _member;
         private EcsInjectAttribute _injectAttribute;
         public bool IsInjected { get; private set; }
-        public Type PropertyType => _member.PropertyType;
+        public Type PropertyType { get { return _member.PropertyType; } }
         public InjectedProperty(PropertyInfo member)
         {
             _member = member;
@@ -282,7 +282,7 @@ namespace DCFApixels.DragonECS
         private EcsInjectAttribute _injectAttribute;
         private Type propertyType;
         public bool IsInjected { get; private set; }
-        public Type PropertyType => propertyType;
+        public Type PropertyType { get { return propertyType; } }
         public InjectedMethod(MethodInfo member)
         {
             _member = member;
