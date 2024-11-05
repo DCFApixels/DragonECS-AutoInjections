@@ -36,7 +36,7 @@ namespace DCFApixels.DragonECS
                         _systemProperties.Add(propertType, list);
                     }
                     list.Add(new InjectedPropertyRecord(system, property));
-                    if (property.GetAutoInjectAttribute() != EcsInjectAttribute.Dummy)
+                    if (property.GetAutoInjectAttribute() != DIAttribute.Dummy)
                     {
                         _notInjected.Add(propertType);
                     }
@@ -56,12 +56,12 @@ namespace DCFApixels.DragonECS
         {
             const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
             result.AddRange(type.GetFields(bindingFlags)
-                .Where(o => isAgressiveInjection || o.GetCustomAttribute<EcsInjectAttribute>() != null)
+                .Where(o => isAgressiveInjection || o.GetCustomAttribute<DIAttribute>() != null)
                 .Select(o => new InjectedField(o)));
             result.AddRange(type.GetProperties(bindingFlags)
                 .Where(o =>
                 {
-                    if (!isAgressiveInjection && o.GetCustomAttribute<EcsInjectAttribute>() == null)
+                    if (!isAgressiveInjection && o.GetCustomAttribute<DIAttribute>() == null)
                     {
                         return false;
                     }
@@ -74,7 +74,7 @@ namespace DCFApixels.DragonECS
             result.AddRange(type.GetMethods(bindingFlags)
                 .Where(o =>
                 {
-                    if (!isAgressiveInjection && o.GetCustomAttribute<EcsInjectAttribute>() == null)
+                    if (!isAgressiveInjection && o.GetCustomAttribute<DIAttribute>() == null)
                     {
                         return false;
                     }
@@ -173,7 +173,7 @@ namespace DCFApixels.DragonECS
         {
             public readonly IEcsProcess target;
             public readonly IInjectedProperty property;
-            public EcsInjectAttribute Attribute { get { return property.GetAutoInjectAttribute(); } }
+            public DIAttribute Attribute { get { return property.GetAutoInjectAttribute(); } }
             public InjectedPropertyRecord(IEcsProcess target, IInjectedProperty property)
             {
                 this.target = target;
@@ -235,22 +235,22 @@ namespace DCFApixels.DragonECS
     {
         bool IsInjected { get; }
         Type PropertyType { get; }
-        EcsInjectAttribute GetAutoInjectAttribute();
+        DIAttribute GetAutoInjectAttribute();
         void Inject(object target, object value);
     }
     internal class InjectedField : IInjectedProperty
     {
         private FieldInfo _member;
-        private EcsInjectAttribute _injectAttribute;
+        private DIAttribute _injectAttribute;
         public bool IsInjected { get; private set; }
         public Type PropertyType { get { return _member.FieldType; } }
         public InjectedField(FieldInfo member)
         {
             _member = member;
-            _injectAttribute = member.GetCustomAttribute<EcsInjectAttribute>();
-            if (_injectAttribute == null) { _injectAttribute = EcsInjectAttribute.Dummy; }
+            _injectAttribute = member.GetCustomAttribute<DIAttribute>();
+            if (_injectAttribute == null) { _injectAttribute = DIAttribute.Dummy; }
         }
-        public EcsInjectAttribute GetAutoInjectAttribute() { return _injectAttribute; }
+        public DIAttribute GetAutoInjectAttribute() { return _injectAttribute; }
         public void Inject(object target, object value)
         {
             _member.SetValue(target, value);
@@ -260,16 +260,16 @@ namespace DCFApixels.DragonECS
     internal class InjectedProperty : IInjectedProperty
     {
         private PropertyInfo _member;
-        private EcsInjectAttribute _injectAttribute;
+        private DIAttribute _injectAttribute;
         public bool IsInjected { get; private set; }
         public Type PropertyType { get { return _member.PropertyType; } }
         public InjectedProperty(PropertyInfo member)
         {
             _member = member;
-            _injectAttribute = member.GetCustomAttribute<EcsInjectAttribute>();
-            if (_injectAttribute == null) { _injectAttribute = EcsInjectAttribute.Dummy; }
+            _injectAttribute = member.GetCustomAttribute<DIAttribute>();
+            if (_injectAttribute == null) { _injectAttribute = DIAttribute.Dummy; }
         }
-        public EcsInjectAttribute GetAutoInjectAttribute() { return _injectAttribute; }
+        public DIAttribute GetAutoInjectAttribute() { return _injectAttribute; }
         public void Inject(object target, object value)
         {
             _member.SetValue(target, value);
@@ -279,18 +279,18 @@ namespace DCFApixels.DragonECS
     internal class InjectedMethod : IInjectedProperty
     {
         private MethodInfo _member;
-        private EcsInjectAttribute _injectAttribute;
+        private DIAttribute _injectAttribute;
         private Type propertyType;
         public bool IsInjected { get; private set; }
         public Type PropertyType { get { return propertyType; } }
         public InjectedMethod(MethodInfo member)
         {
             _member = member;
-            _injectAttribute = member.GetCustomAttribute<EcsInjectAttribute>();
+            _injectAttribute = member.GetCustomAttribute<DIAttribute>();
             propertyType = _member.GetParameters()[0].ParameterType;
-            if (_injectAttribute == null) { _injectAttribute = EcsInjectAttribute.Dummy; }
+            if (_injectAttribute == null) { _injectAttribute = DIAttribute.Dummy; }
         }
-        public EcsInjectAttribute GetAutoInjectAttribute() { return _injectAttribute; }
+        public DIAttribute GetAutoInjectAttribute() { return _injectAttribute; }
         public void Inject(object target, object value)
         {
             _member.Invoke(target, new object[] { value });
