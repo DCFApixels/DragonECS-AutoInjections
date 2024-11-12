@@ -36,7 +36,9 @@
 </br>
 
 The extension is designed to reduce the amount of code by simplifying dependency injection by doing injections automatically.
-> **NOTICE:** The project is a work in progress, API may change.  
+> [!WARNING]
+> The project is a work in progress, API may change.  
+>
 > While the English version of the README is incomplete, you can view the [Russian version](https://github.com/DCFApixels/DragonECS-AutoInjections/blob/main/README-RU.md).
 
 
