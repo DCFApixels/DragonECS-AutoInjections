@@ -11,8 +11,29 @@
 
 # Auto Injections for [DragonECS](https://github.com/DCFApixels/DragonECS)
 
-| Languages: | [Русский](https://github.com/DCFApixels/DragonECS-AutoInjections/blob/main/README-RU.md) | [English(WIP)](https://github.com/DCFApixels/DragonECS-AutoInjections) |
-| :--- | :--- | :--- |
+<table>
+  <tr></tr>
+  <tr>
+    <td colspan="3">Readme Languages:</td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td nowrap width="100">
+      <a href="https://github.com/DCFApixels/DragonECS-AutoInjections/blob/main/README-RU.md">
+        <img src="https://github.com/user-attachments/assets/3c699094-f8e6-471d-a7c1-6d2e9530e721"></br>
+        <span>Русский</span>
+      </a>  
+    </td>
+    <td nowrap width="100">
+      <a href="https://github.com/DCFApixels/DragonECS-AutoInjections">
+        <img src="https://github.com/user-attachments/assets/30528cb5-f38e-49f0-b23e-d001844ae930"></br>
+        <span>English(WIP)</span>
+      </a>  
+    </td>
+  </tr>
+</table>
+
+</br>
 
 Расширение призвано сократить объем кода, упростив инъекцию  зависимостей, делая их автоматически.
 > **ВАЖНО!** Проект в стадии разработки. API может меняться.
@@ -37,7 +58,7 @@
 Опционально:
 + Игровые движки с C#: Unity, Godot, MonoGame и т.д.
 
-Протестированно:
+Протестировано:
 + **Unity:** Минимальная версия 2020.1.0;
 
 ## Установка для Unity
@@ -46,7 +67,7 @@
 ```
 https://github.com/DCFApixels/DragonECS-AutoInjections.git
 ```
-* ### В виде иходников
+* ### В виде исходников
 Фреймворк так же может быть добавлен в проект в виде исходников.
 
 </br>
@@ -121,7 +142,7 @@ sealed class DoSomethingProcessRunner : EcsRunner<IDoSomethingProcess>, IDoSomet
 }
 
 //...
-// Если в пайплайн небыл добавлен раннер, то GetRunnerAuto автоматически добавит экземпляр DoSomethingProcessRunner.
+// Если в пайплайн не был добавлен раннер, то GetRunnerAuto автоматически добавит экземпляр DoSomethingProcessRunner.
 _pipeline.GetRunnerAuto<IDoSomethingProcess>().Do();
 ```
 
@@ -190,7 +211,7 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
 
 # Не null инъекции
 
-Чтобы поле помеченное `[EcsInject]` было проинициализированно даже в случае отстувия инъекции, в конструктор атрибута можно передать тип болванку. В примере ниже поле `foo` получит экземпляр класса `Foo` из инъекции или экземпляр `FooDummy : Foo` если инъекции небыло.
+Чтобы поле помеченное `[EcsInject]` было проинициализированно даже в случае отстувия инъекции, в конструктор атрибута можно передать тип болванку. В примере ниже поле `foo` получит экземпляр класса `Foo` из инъекции или экземпляр `FooDummy : Foo` если инъекции не было.
 ``` csharp
 [EcsInject(typeof(FooDummy))] Foo foo;
 ```

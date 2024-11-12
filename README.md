@@ -11,8 +11,29 @@
 
 # Auto Injections for [DragonECS](https://github.com/DCFApixels/DragonECS)
 
-| Languages: | [Русский](https://github.com/DCFApixels/DragonECS-AutoInjections/blob/main/README-RU.md) | [English(WIP)](https://github.com/DCFApixels/DragonECS-AutoInjections) |
-| :--- | :--- | :--- |
+<table>
+  <tr></tr>
+  <tr>
+    <td colspan="3">Readme Languages:</td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td nowrap width="100">
+      <a href="https://github.com/DCFApixels/DragonECS-AutoInjections/blob/main/README-RU.md">
+        <img src="https://github.com/user-attachments/assets/7bc29394-46d6-44a3-bace-0a3bae65d755"></br>
+        <span>Русский</span>
+      </a>  
+    </td>
+    <td nowrap width="100">
+      <a href="https://github.com/DCFApixels/DragonECS-AutoInjections">
+        <img src="https://github.com/user-attachments/assets/3c699094-f8e6-471d-a7c1-6d2e9530e721"></br>
+        <span>English(WIP)</span>
+      </a>  
+    </td>
+  </tr>
+</table>
+
+</br>
 
 The extension is designed to reduce the amount of code by simplifying dependency injection by doing injections automatically.
 > **NOTICE:** The project is a work in progress, API may change.  
@@ -36,12 +57,12 @@ Tested with:
 
 ## Unity Installation
 * ### Unity Package
-The framework can be installed as a Unity package by adding the Git URL [in the PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) or manually adding it to `Packages/manifest.json`: 
+The package can be installed as a Unity package by adding the Git URL [in the PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) or manually adding it to `Packages/manifest.json`: 
 ```
 https://github.com/DCFApixels/DragonECS-AutoInjections.git
 ```
 * ### Source Code
-The framework can also be added to the project as source code.
+The package can also be added to the project as source code.
 
 </br>
 
