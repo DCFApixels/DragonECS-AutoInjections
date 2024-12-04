@@ -42,16 +42,8 @@ namespace DCFApixels.DragonECS
                     }
                 }
             }
-            //foreach (var pair in _systemProperties)
-            //{
-            //    _notInjected.Add(pair.Key);
-            //}
         }
 
-        //private bool IsInjectTarget(MemberInfo member)
-        //{
-        //    return _isAgressiveInjection || member.GetCustomAttribute<EcsInjectAttribute>() != null;
-        //}
         private static void Do(Type type, List<IInjectedProperty> result, bool isAgressiveInjection)
         {
             const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -110,9 +102,18 @@ namespace DCFApixels.DragonECS
 
             if (_systemProperties.TryGetValue(fieldType, out List<InjectedPropertyRecord> list))
             {
+                string name = string.Empty;
+                if(obj is INamedMember named)
+                {
+                    name = named.Name;
+                }
                 foreach (var item in list)
                 {
-                    item.property.Inject(item.target, obj);
+                    string propertyName = item.Attribute.NamedInjection;
+                    if (string.IsNullOrEmpty(propertyName) || propertyName == name)
+                    {
+                        item.property.Inject(item.target, obj);
+                    }
                 }
             }
 
@@ -134,16 +135,16 @@ namespace DCFApixels.DragonECS
             {
                 foreach (var systemRecord in _systemProperties[notInjectedItem])
                 {
-                    if (systemRecord.Attribute.notNullDummyType == null)
+                    if (systemRecord.Attribute.NotNullDummyType == null)
                         continue;
                     if (systemRecord.property.IsInjected)
                         continue;
-                    if (systemRecord.property.PropertyType.IsAssignableFrom(systemRecord.Attribute.notNullDummyType) == false)
+                    if (systemRecord.property.PropertyType.IsAssignableFrom(systemRecord.Attribute.NotNullDummyType) == false)
                     {
-                        EcsDebug.Print(EcsConsts.DEBUG_ERROR_TAG, $"The {systemRecord.Attribute.notNullDummyType} dummy cannot be assigned to the {systemRecord.property.PropertyType.Name} field");
+                        EcsDebug.Print(EcsConsts.DEBUG_ERROR_TAG, $"The {systemRecord.Attribute.NotNullDummyType} dummy cannot be assigned to the {systemRecord.property.PropertyType.Name} field");
                         continue;
                     }
-                    systemRecord.property.Inject(systemRecord.target, DummyInstance.GetInstance(systemRecord.Attribute.notNullDummyType));
+                    systemRecord.property.Inject(systemRecord.target, DummyInstance.GetInstance(systemRecord.Attribute.NotNullDummyType));
                 }
             }
             WarningMissedInjections();
