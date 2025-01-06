@@ -103,7 +103,7 @@ namespace DCFApixels.DragonECS
             if (_systemProperties.TryGetValue(fieldType, out List<InjectedPropertyRecord> list))
             {
                 string name = string.Empty;
-                if(obj is INamedMember named)
+                if (obj is INamedMember named)
                 {
                     name = named.Name;
                 }
