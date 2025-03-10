@@ -18,5 +18,10 @@ namespace DCFApixels.DragonECS.AutoInjections.Internal
             attribute = self.GetCustomAttribute<T>();
             return attribute != null;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool HasAttribute<T>(this MemberInfo self) where T : Attribute
+        {
+            return self.GetCustomAttribute<T>() != null;
+        }
     }
 }
