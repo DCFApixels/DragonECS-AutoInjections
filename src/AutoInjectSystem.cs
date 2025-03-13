@@ -10,7 +10,7 @@ namespace DCFApixels.DragonECS
     internal class AutoInjectionMap
     {
         private readonly EcsPipeline _source;
-        private Dictionary<Type, List<InjectedPropertyRecord>> _systemProperties = new Dictionary<Type, List<InjectedPropertyRecord>>();
+        private Dictionary<Type, List<InjectedPropertyRecord>> _injectedTypeToPropertiesMap = new Dictionary<Type, List<InjectedPropertyRecord>>();
         private HashSet<Type> _notInjected = new HashSet<Type>();
         private bool _isDummyInjected = false;
 
@@ -29,10 +29,10 @@ namespace DCFApixels.DragonECS
                 {
                     Type propertType = property.PropertyType;
                     List<InjectedPropertyRecord> list;
-                    if (_systemProperties.TryGetValue(propertType, out list) == false)
+                    if (_injectedTypeToPropertiesMap.TryGetValue(propertType, out list) == false)
                     {
                         list = new List<InjectedPropertyRecord>();
-                        _systemProperties.Add(propertType, list);
+                        _injectedTypeToPropertiesMap.Add(propertType, list);
                     }
                     list.Add(new InjectedPropertyRecord(system, property));
                     if (property.GetAutoInjectAttribute() != DIAttribute.Dummy)
@@ -102,12 +102,12 @@ namespace DCFApixels.DragonECS
             {
                 _notInjected.Remove(fieldType);
             }
-            if (_relatedTypesBuffer == null || _relatedTypesBuffer.Length < _systemProperties.Count)
+            if (_relatedTypesBuffer == null || _relatedTypesBuffer.Length < _injectedTypeToPropertiesMap.Count)
             {
-                _relatedTypesBuffer = new Type[_systemProperties.Count];
+                _relatedTypesBuffer = new Type[_injectedTypeToPropertiesMap.Count];
             }
             int relatedTypesCount = 0;
-            foreach (var pair in _systemProperties)
+            foreach (var pair in _injectedTypeToPropertiesMap)
             {
                 if (pair.Key == fieldType || pair.Key.IsAssignableFrom(fieldType))
                 {
@@ -117,7 +117,7 @@ namespace DCFApixels.DragonECS
 
             foreach (var type in new ReadOnlySpan<Type>(_relatedTypesBuffer, 0, relatedTypesCount))
             {
-                if (_systemProperties.TryGetValue(type, out List<InjectedPropertyRecord> list))
+                if (_injectedTypeToPropertiesMap.TryGetValue(type, out List<InjectedPropertyRecord> list))
                 {
                     string name = string.Empty;
                     if (obj is INamedMember named)
@@ -144,7 +144,7 @@ namespace DCFApixels.DragonECS
             _isDummyInjected = true;
             foreach (var notInjectedItem in _notInjected)
             {
-                foreach (var systemRecord in _systemProperties[notInjectedItem])
+                foreach (var systemRecord in _injectedTypeToPropertiesMap[notInjectedItem])
                 {
                     if (systemRecord.Attribute.NotNullDummyType == null)
                         continue;
@@ -168,7 +168,7 @@ namespace DCFApixels.DragonECS
 #if DEBUG   
             foreach (var item in _notInjected)
             {
-                foreach (var systemRecord in _systemProperties[item])
+                foreach (var systemRecord in _injectedTypeToPropertiesMap[item])
                 {
                     EcsDebug.PrintWarning($"in system {EcsDebugUtility.GetGenericTypeFullName(systemRecord.target.GetType(), 1)} is missing an injection of {EcsDebugUtility.GetGenericTypeFullName(item, 1)}.");
                 }
