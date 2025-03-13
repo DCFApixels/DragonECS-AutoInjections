@@ -198,14 +198,30 @@ namespace DCFApixels.DragonECS
     [MetaColor(MetaColor.Gray)]
     [MetaGroup(EcsAutoInjectionsConsts.PACK_GROUP, EcsConsts.DI_GROUP)]
     [MetaDescription(EcsConsts.AUTHOR, "The system responsible for the processing of automatic injections. The .AutoInject() method adds an AutoInjectSystem to the systems pipelines.")]
-    public class AutoInjectSystem : IEcsInject<object>, IEcsPipelineMember, IOnInitInjectionComplete
+    public class AutoInjectSystem : IEcsInject<object>, IEcsPipelineMember, IOnInitInjectionComplete, IEcsDefaultAddParams
     {
+        public AddParams AddParams => new AddParams(layerName: EcsConsts.PRE_BEGIN_LAYER, isUnique: true);
+
         private EcsPipeline _pipeline;
-        EcsPipeline IEcsPipelineMember.Pipeline { get => _pipeline; set => _pipeline = value; }
         private List<object> _delayedInjects = new List<object>();
         private AutoInjectionMap _autoInjectionMap;
         private bool _isInitInjectionCompleted;
         private bool _isAgressiveInjection;
+
+        static AutoInjectSystem()
+        {
+            EcsAspect.OnInit += EcsAspect_OnInit;
+            EcsAspect.OnAfterInit += EcsAspect_OnBuild; ;
+        }
+
+        private static void EcsAspect_OnInit(object aspect, EcsAspect.Builder builder)
+        {
+            EcsAspectAutoHelper.FillFields(aspect, builder);
+        }
+        private static void EcsAspect_OnBuild(object aspect, EcsMask mask)
+        {
+            EcsAspectAutoHelper.FillMaskFields(aspect, mask);
+        }
 
         public AutoInjectSystem(bool isAgressiveInjection = false)
         {
@@ -224,6 +240,7 @@ namespace DCFApixels.DragonECS
             }
         }
 
+        public void OnBeforeInitInjection() { }
         public void OnInitInjectionComplete()
         {
             _autoInjectionMap = new AutoInjectionMap(_pipeline, _isAgressiveInjection);
@@ -240,6 +257,8 @@ namespace DCFApixels.DragonECS
             _delayedInjects = null;
             GC.Collect(0);
         }
+
+        EcsPipeline IEcsPipelineMember.Pipeline { get => _pipeline; set => _pipeline = value; }
     }
 
     #region Utils

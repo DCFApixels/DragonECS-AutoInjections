@@ -14,32 +14,32 @@ namespace DCFApixels.DragonECS
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public sealed class CombineAttribute : InjectAspectMemberAttribute
     {
-        public readonly int order = 0;
-        public CombineAttribute(int order = 0) { this.order = order; }
+        public readonly int Order = 0;
+        public CombineAttribute(int order = 0) { Order = order; }
     }
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public sealed class MaskAttribute : InjectAspectMemberAttribute { }
 
-    public abstract class ImplicitInjectAttribute : Attribute { }
+
+    public abstract class ImplicitInjectAttribute : Attribute
+    {
+        public readonly Type Type;
+        public readonly bool IsPool;
+        public ImplicitInjectAttribute(Type type)
+        {
+            Type = type;
+            IsPool = type.GetInterfaces().Any(o => o == typeof(IEcsPoolImplementation));
+        }
+    }
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public sealed class IncImplicitAttribute : ImplicitInjectAttribute
     {
-        public readonly Type type;
-        public readonly bool isPool;
-        public IncImplicitAttribute(Type type)
-        {
-            this.type = type;
-            isPool = type.GetInterfaces().Any(o => o == typeof(IEcsPoolImplementation));
-        }
+        public IncImplicitAttribute(Type type) : base(type) { }
     }
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public sealed class ExcImplicitAttribute : ImplicitInjectAttribute
     {
-        public readonly Type type;
-        public readonly bool isPool;
-        public ExcImplicitAttribute(Type type)
-        {
-            this.type = type;
-            isPool = type.GetInterfaces().Any(o => o == typeof(IEcsPoolImplementation));
-        }
+        public ExcImplicitAttribute(Type type) : base(type) { }
     }
 }
 
