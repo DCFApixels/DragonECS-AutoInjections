@@ -1,3 +1,6 @@
+#if DISABLE_DEBUG
+#undef DEBUG
+#endif
 using DCFApixels.DragonECS.AutoInjections;
 using DCFApixels.DragonECS.AutoInjections.Internal;
 using System;
@@ -63,7 +66,7 @@ namespace DCFApixels.DragonECS
                     {
                         return false;
                     }
-#if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
+#if DEBUG || ENABLE_DRAGONECS_ASSERT_CHEKS
                     if (!isAgressiveInjection && o.CanWrite == false) { Throw.PropertyIsCantWrite(o); }
 #endif
                     return o.CanWrite == false;
@@ -78,7 +81,7 @@ namespace DCFApixels.DragonECS
                         return false;
                     }
                     var parameters = o.GetParameters();
-#if (DEBUG && !DISABLE_DEBUG) || ENABLE_DRAGONECS_ASSERT_CHEKS
+#if DEBUG || ENABLE_DRAGONECS_ASSERT_CHEKS
                     if (!isAgressiveInjection)
                     {
                         if (o.IsGenericMethod) { Throw.MethodIsGeneric(o); }

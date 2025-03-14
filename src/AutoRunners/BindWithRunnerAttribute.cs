@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if DISABLE_DEBUG
+#undef DEBUG
+#endif
+using System;
+
 [AttributeUsage(AttributeTargets.Interface, Inherited = false, AllowMultiple = false)]
 public sealed class BindWithRunnerAttribute : Attribute
 {

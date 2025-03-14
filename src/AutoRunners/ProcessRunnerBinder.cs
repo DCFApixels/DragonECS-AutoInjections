@@ -1,4 +1,7 @@
-﻿using DCFApixels.DragonECS.AutoInjections.Internal;
+﻿#if DISABLE_DEBUG
+#undef DEBUG
+#endif
+using DCFApixels.DragonECS.AutoInjections.Internal;
 using System;
 using System.Reflection;
 
