@@ -210,8 +210,10 @@ namespace DCFApixels.DragonECS
 
         static AutoInjectSystem()
         {
+            EcsAspect.OnInit -= EcsAspect_OnInit;
             EcsAspect.OnInit += EcsAspect_OnInit;
-            EcsAspect.OnAfterInit += EcsAspect_OnBuild; ;
+            EcsAspect.OnAfterInit -= EcsAspect_OnBuild;
+            EcsAspect.OnAfterInit += EcsAspect_OnBuild;
         }
 
         private static void EcsAspect_OnInit(object aspect, EcsAspect.Builder builder)
