@@ -69,7 +69,7 @@ namespace DCFApixels.DragonECS
 #if DEBUG || ENABLE_DRAGONECS_ASSERT_CHEKS
                     if (!isAgressiveInjection && o.CanWrite == false) { Throw.PropertyIsCantWrite(o); }
 #endif
-                    return o.CanWrite == false;
+                    return o.CanWrite;
                 })
                 .Select(o => new InjectedProperty(o)));
 
