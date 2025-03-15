@@ -66,7 +66,7 @@ namespace DCFApixels.DragonECS
                     {
                         return false;
                     }
-#if DEBUG || ENABLE_DRAGONECS_ASSERT_CHEKS
+#if DEBUG
                     if (!isAgressiveInjection && o.CanWrite == false) { Throw.PropertyIsCantWrite(o); }
 #endif
                     return o.CanWrite;
@@ -81,13 +81,13 @@ namespace DCFApixels.DragonECS
                         return false;
                     }
                     var parameters = o.GetParameters();
-#if DEBUG || ENABLE_DRAGONECS_ASSERT_CHEKS
                     if (!isAgressiveInjection)
                     {
+#if DEBUG
                         if (o.IsGenericMethod) { Throw.MethodIsGeneric(o); }
                         if (parameters.Length != 1) { Throw.MethodArgumentsGreater1(o); }
-                    }
 #endif
+                    }
                     return o.IsGenericMethod == false && parameters.Length == 1;
                 })
                 .Select(o => new InjectedMethod(o)));
