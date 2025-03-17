@@ -26,12 +26,10 @@ namespace DCFApixels.DragonECS
 
     public abstract class ImplicitInjectAttribute : Attribute
     {
-        public readonly Type Type;
-        public readonly bool IsPool;
-        public ImplicitInjectAttribute(Type type)
+        public readonly Type ComponentType;
+        public ImplicitInjectAttribute(Type componentType)
         {
-            Type = type;
-            IsPool = type.GetInterfaces().Any(o => o == typeof(IEcsPoolImplementation));
+            ComponentType = componentType;
         }
     }
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
