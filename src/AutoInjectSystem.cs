@@ -101,10 +101,7 @@ namespace DCFApixels.DragonECS
         private Type[] _relatedTypesBuffer;
         public void Inject(Type fieldType, object obj)
         {
-            if (_isPreInitInjectionComplete == false)
-            {
-                _notInjected.Remove(fieldType);
-            }
+
             if (_relatedTypesBuffer == null || _relatedTypesBuffer.Length < _injectedTypeToPropertiesMap.Count)
             {
                 _relatedTypesBuffer = new Type[_injectedTypeToPropertiesMap.Count];
@@ -132,6 +129,10 @@ namespace DCFApixels.DragonECS
                         string propertyName = item.Attribute.NamedInjection;
                         if (string.IsNullOrEmpty(propertyName) || propertyName == name)
                         {
+                            if (_isPreInitInjectionComplete == false)
+                            {
+                                _notInjected.Remove(item.property.PropertyType);
+                            }
                             item.property.Inject(item.target, obj);
                         }
                     }
