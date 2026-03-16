@@ -26,12 +26,5 @@ namespace DCFApixels.DragonECS
             NotNullDummyType = notNullDummyType;
         }
     }
-
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-    [Obsolete("Use DI attribute")]
-    public sealed class EcsInjectAttribute : DIAttribute
-    {
-        public EcsInjectAttribute(Type notNullDummyType = null) : base(notNullDummyType) { }
-    }
 }
 
