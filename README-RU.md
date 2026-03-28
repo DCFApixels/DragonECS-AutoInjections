@@ -35,8 +35,7 @@
 
 </br>
 
-Расширение призвано сократить объем кода, упростив инъекцию  зависимостей, делая их автоматически.
-
+Расширение автоматизирует внедрение зависимостей, что позволяет сократить объем кода и упростить разработку.
 > [!WARNING] 
 > Проект в стадии разработки. API может меняться.
 
@@ -52,26 +51,31 @@
 </br>
 
 # Установка
-Семантика версионирования - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
+Семантика версионирования - [Открыть](https://gist.github.com/DCFApixels/af79284955bf40e9476cdcac79d7b098#file-dcfapixels_versioning-md)
 ## Окружение
 Обязательные требования:
 + Зависимость: [DragonECS](https://github.com/DCFApixels/DragonECS)
 + Минимальная версия C# 7.3;
 
-Опционально:
+Поддерживает:
 + Игровые движки с C#: Unity, Godot, MonoGame и т.д.
 
-Протестировано:
-+ **Unity:** Минимальная версия 2020.1.0;
+Протестировано на:
+* **Unity:** Минимальная версия 2021.2.0.
 
 ## Установка для Unity
 * ### Unity-модуль
-Поддерживается установка в виде Unity-модуля в  при помощи добавления git-URL [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json`: 
+Поддерживается установка в виде Unity-модуля при помощи добавления git-URL [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html): 
 ```
 https://github.com/DCFApixels/DragonECS-AutoInjections.git
 ```
+Или ручного добавления этой строчки в `Packages/manifest.json`:
+```
+"com.dcfa_pixels.dragonecs-auto_injections": "https://github.com/DCFApixels/DragonECS-AutoInjections.git",
+```
+
 * ### В виде исходников
-Фреймворк так же может быть добавлен в проект в виде исходников.
+Можно так же напрямую скопировать в проект исходники фреймворка.
 
 </br>
 
@@ -88,30 +92,33 @@ _pipeline = EcsPipeline.New()
     .BuildAndInit();
 ```
 
+> [!IMPORTANT] 
+> Проверьте что в инициализации добавлен вызов `AutoInject()`, иначе ничего не будет работать.
+
 </br>
 
 # Инъекция зависимостей
-Атрибут `[EcsInject]` убирает необходимость использования интерфейса `IEcsInject<T>`, поля помеченные таким атрибутом автоматически подхватят зависимости внедренные в Pipeline. Пример： 
+Атрибут `[DI]` заменяет интерфейс `IEcsInject<T>`, Поля, отмеченные этим атрибутом, автоматически получают зависимости, внедрённые в Pipeline. Пример： 
 ```csharp
-[EcsInject] EcsDefaultWorld _world;
+[DI] EcsDefaultWorld _world;
 ```
 Так же можно делать внедрение через свойство или метод:
 ```csharp
 EcsDefaultWorld _world;
 
 //Обязательно наличие set блока.  
-[EcsInject] EcsDefaultWorld World { set => _world = value; } 
+[DI] EcsDefaultWorld World { set => _world = value; } 
 
 //Количество аргументов должно быть равно 1.
-[EcsInject] void InjectWorld(EcsDefaultWorld world) => _world = world;
+[DI] void InjectWorld(EcsDefaultWorld world) => _world = world;
 ```
 
-> Поддерживается агрессивная инъекция, инъекция будет произведена без атрибута `[EcsInject]`, для этого нужно вызвать `.AutoInject(true)`.
+> Агрессивная инъекция (без атрибута `[DI]`) включается вызовом `.AutoInject(true)`.
 
 </br>
 
 # Auto Builder аспектов
-Так же AutoInjections упрощает построение аспектов. Для начала наследуйте аспект не от `EcsAspect`, а от `EcsAspectAuto`, а далее добавьте специальные атрибуты.
+Так же AutoInjections упрощает построение аспектов. Для этого есть следующие атрибуты:
 
 Атрибуты для инициализации полей с пулами: 
 * `[Inc]` - кеширует пул и добавит тип компонента в включающее ограничение аспекта, аналог метода `Include`;
@@ -129,6 +136,7 @@ EcsDefaultWorld _world;
 
 # Auto Runner-ы
 Для получения раннеров без добавления, есть атрибут `[BindWithRunner(type)]` и метод `GetRunnerAuto<T>()`. 
+
 ``` c#
 [BindWithRunner(typeof(DoSomethingProcessRunner))]
 interface IDoSomethingProcess : IEcsProcess
@@ -152,6 +160,7 @@ _pipeline.GetRunnerAuto<IDoSomethingProcess>().Do();
 </br>
 
 # Пример кода
+
 ```csharp
 class VelocitySystemDI : IEcsRun
 {
@@ -162,8 +171,8 @@ class VelocitySystemDI : IEcsRun
         [Inc] public EcsPool<Velocity> velocities;
     }
 
-    [EcsInject] EcsDefaultWorld _world;
-    [EcsInject] TimeService _time;
+    [DI] EcsDefaultWorld _world;
+    [DI] TimeService _time;
 
     public void Run()
     {
@@ -174,9 +183,12 @@ class VelocitySystemDI : IEcsRun
     }
 }
 ```
+
+
+
 <details>
 <summary>Тот же код но без AutoInjections</summary>
-    
+
 ```csharp
 class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
 {
@@ -209,15 +221,14 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
 ```
 
 </details>
-    
-</br>
+
 
 # Не null инъекции
 
-Чтобы поле помеченное `[EcsInject]` было проинициализированно даже в случае отстувия инъекции, в конструктор атрибута можно передать тип болванку. В примере ниже поле `foo` получит экземпляр класса `Foo` из инъекции или экземпляр `FooDummy : Foo` если инъекции не было.
+Чтобы поле, отмеченное атрибутом `[DI]`, было проинициализировано даже в случае отсутствия инъекции, в конструктор атрибута можно передать тип-заглушку. В примере ниже поле `foo` получит экземпляр `Foo` из инъекции или экземпляр `FooDummy : Foo`, если инъекция не была выполнена.
 ``` csharp
-[EcsInject(typeof(FooDummy))] Foo foo;
+[DI(typeof(FooDummy))] Foo foo;
 ```
-> Переданный тип должен иметь конструктор без параметров и быть либо того же типа что и тип поля, либо производного типа. 
+> Переданный тип должен иметь конструктор без параметров и быть либо того же типа, что и поле, либо производным от него. 
   
-Расширение так же сообщит если по завершению предварительной инъекции, остались не проинициализированные поля с `[EcsInject]`.
+Расширение также сообщит, если после завершения предварительной инъекции остались непроинициализированные поля с атрибутом `[DI]`.
