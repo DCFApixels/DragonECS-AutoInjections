@@ -45,31 +45,71 @@ The extension is designed to reduce the amount of code by simplifying dependency
 </br>
 
 # Installation
-Versioning semantics - [Open](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
+Versioning semantics - [Open](https://gist.github.com/DCFApixels/af79284955bf40e9476cdcac79d7b098#file-dcfapixels_versioning-md)
 ## Environment
 Requirements:
 + Dependency: [DragonECS](https://github.com/DCFApixels/DragonECS)
 + Minimum version of C# 7.3;
   
 Optional:
-+ Game engines with C#: Unity, Godot, MonoGame, etc.
-  
+* Game engines with C#: Unity, Godot, MonoGame, etc.
+
 Tested with:
-+ **Unity:** Minimum version 2020.1.0;
+* **Unity:** Minimum version 2021.2.0.
 
 ## Unity Installation
 * ### Unity Package
-The package can be installed as a Unity package by adding the Git URL [in the PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) or manually adding it to `Packages/manifest.json`: 
+The package supports installation as a Unity package by adding the Git URL [in the PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html): 
 ```
 https://github.com/DCFApixels/DragonECS-AutoInjections.git
 ```
+Or add the package entry to `Packages/manifest.json`:
+```
+"com.dcfa_pixels.dragonecs-auto_injections": "https://github.com/DCFApixels/DragonECS-AutoInjections.git",
+```
+
 * ### Source Code
-The package can also be added to the project as source code.
+The package source code can also be copied directly into the project.
+
 
 </br>
 
+# Integration
+Add the AutoInject() call to the pipeline Builder. Example:
+```c#
+_pipeline = EcsPipeline.New()
+    .Inject(world)
+    .Inject(_timeService)
+    .Add(new TestSystem())
+    .Add(new VelocitySystem())
+    .Add(new ViewSystem())
+    .AutoInject() // Done — automatic injections enabled
+    .BuildAndInit();
+```
+
+> [!IMPORTANT] 
+> Ensure AutoInject() is called during initialization; otherwise nothing will work.
+
+# Dependency Injection
+The `[DI]` attribute replaces the `IEcsInject<T>` interface. Fields marked with this attribute automatically receive dependencies injected into the pipeline. Example：
+```c#
+[DI] EcsDefaultWorld _world;
+```
+Injection can also be done via a property or method:
+```c#
+EcsDefaultWorld _world;
+
+//Обязательно наличие set блока.  
+[DI] EcsDefaultWorld World { set => _world = value; } 
+
+//Количество аргументов должно быть равно 1.
+[DI] void InjectWorld(EcsDefaultWorld world) => _world = world;
+```
+
+> Aggressive injection (without the `[DI]` attribute) is enabled by calling `.AutoInject(true)`.
+
 # Code Example
-```csharp
+```c#
 class VelocitySystemDI : IEcsRun
 {
     class Aspect : EcsAspectAuto
@@ -79,8 +119,8 @@ class VelocitySystemDI : IEcsRun
         [Inc] public EcsPool<Velocity> velocities;
     }
 
-    [EcsInject] EcsDefaultWorld _world;
-    [EcsInject] TimeService _time;
+    [DI] EcsDefaultWorld _world;
+    [DI] TimeService _time;
 
     public void Run()
     {
@@ -94,7 +134,7 @@ class VelocitySystemDI : IEcsRun
 <details>
 <summary>Same code but without AutoInjections</summary>
     
-```csharp
+```c#
 class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
 {
     class Aspect : EcsAspect

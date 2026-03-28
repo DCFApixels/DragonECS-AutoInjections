@@ -81,7 +81,7 @@ https://github.com/DCFApixels/DragonECS-AutoInjections.git
 
 # Интеграция
 Добавьте вызов метода `AutoInject()` для Builder-а пайплайна. Пример:
-```csharp
+```c#
 _pipeline = EcsPipeline.New()
     .Inject(world)
     .Inject(_timeService)
@@ -99,11 +99,11 @@ _pipeline = EcsPipeline.New()
 
 # Инъекция зависимостей
 Атрибут `[DI]` заменяет интерфейс `IEcsInject<T>`, Поля, отмеченные этим атрибутом, автоматически получают зависимости, внедрённые в Pipeline. Пример： 
-```csharp
+```c#
 [DI] EcsDefaultWorld _world;
 ```
 Так же можно делать внедрение через свойство или метод:
-```csharp
+```c#
 EcsDefaultWorld _world;
 
 //Обязательно наличие set блока.  
@@ -137,7 +137,7 @@ EcsDefaultWorld _world;
 # Auto Runner-ы
 Для получения раннеров без добавления, есть атрибут `[BindWithRunner(type)]` и метод `GetRunnerAuto<T>()`. 
 
-``` c#
+```c#
 [BindWithRunner(typeof(DoSomethingProcessRunner))]
 interface IDoSomethingProcess : IEcsProcess
 {
@@ -161,7 +161,7 @@ _pipeline.GetRunnerAuto<IDoSomethingProcess>().Do();
 
 # Пример кода
 
-```csharp
+```c#
 class VelocitySystemDI : IEcsRun
 {
     class Aspect : EcsAspectAuto
@@ -189,7 +189,7 @@ class VelocitySystemDI : IEcsRun
 <details>
 <summary>Тот же код но без AutoInjections</summary>
 
-```csharp
+```c#
 class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
 {
     class Aspect : EcsAspect
@@ -226,7 +226,7 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
 # Не null инъекции
 
 Чтобы поле, отмеченное атрибутом `[DI]`, было проинициализировано даже в случае отсутствия инъекции, в конструктор атрибута можно передать тип-заглушку. В примере ниже поле `foo` получит экземпляр `Foo` из инъекции или экземпляр `FooDummy : Foo`, если инъекция не была выполнена.
-``` csharp
+```c#
 [DI(typeof(FooDummy))] Foo foo;
 ```
 > Переданный тип должен иметь конструктор без параметров и быть либо того же типа, что и поле, либо производным от него. 
