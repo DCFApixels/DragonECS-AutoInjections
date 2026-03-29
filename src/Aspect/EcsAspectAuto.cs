@@ -9,16 +9,6 @@ using System.Reflection;
 
 namespace DCFApixels.DragonECS
 {
-    public abstract class EcsAspectAuto : EcsAspect
-    {
-        protected sealed override void Init(Builder b)
-        {
-            //EcsAspectAutoHelper.Fill(this, b);
-            InitAfterDI(b);
-        }
-        protected virtual void InitAfterDI(Builder b) { }
-    }
-
     internal static class EcsAspectAutoHelper
     {
         private static readonly MethodInfo _incluedMethod;
