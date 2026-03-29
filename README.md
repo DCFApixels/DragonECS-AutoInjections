@@ -225,6 +225,7 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
 
 </details>
 
+</br>
 
 # Non-null injections
 To ensure a field marked with `[DI]` is initialized even if injection does not occur, pass a fallback type to the attribute constructor. In the example below the field `Foo` will receive the injected `Foo` instance or an instance of `FooDummy : Foo` if injection was not performed.
@@ -232,3 +233,8 @@ To ensure a field marked with `[DI]` is initialized even if injection does not o
 > The provided type must have a parameterless constructor and be either the same type as the field or derived from it.
 
 The extension will also report if any `[DI]`-marked fields remain uninitialized after the pre-injection phase.
+
+</br>
+
+# License
+The MIT License: [Open](LICENSE.md)

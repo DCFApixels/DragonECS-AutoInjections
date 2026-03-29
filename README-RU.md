@@ -222,6 +222,7 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
 
 </details>
 
+</br>
 
 # Не null инъекции
 
@@ -232,3 +233,8 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
 > Переданный тип должен иметь конструктор без параметров и быть либо того же типа, что и поле, либо производным от него. 
   
 Расширение также сообщит, если после завершения предварительной инъекции остались непроинициализированные поля с атрибутом `[DI]`.
+
+</br>
+
+# Лицензия
+MIT Лицензия: [Открыть](LICENSE.md)
