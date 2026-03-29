@@ -107,10 +107,10 @@ Injection can also be done via a property or method:
 ```c#
 EcsDefaultWorld _world;
 
-//Обязательно наличие set блока.  
+// A set accessor is required.
 [DI] EcsDefaultWorld World { set => _world = value; } 
 
-//Количество аргументов должно быть равно 1.
+// Methods must have exactly one argument.
 [DI] void InjectWorld(EcsDefaultWorld world) => _world = world;
 ```
 
@@ -145,7 +145,7 @@ interface IDoSomethingProcess : IEcsProcess
 {
     void Do();
 }
-//Реализация раннера. Пример реализации можно так же посмотреть в встроенных процессах 
+// Runner implementation. See built-in processes for example 
 sealed class DoSomethingProcessRunner : EcsRunner<IDoSomethingProcess>, IDoSomethingProcess
 {
     public void Do() 
@@ -155,7 +155,7 @@ sealed class DoSomethingProcessRunner : EcsRunner<IDoSomethingProcess>, IDoSomet
 }
 
 //...
-// Если в пайплайн не был добавлен раннер, то GetRunnerAuto автоматически добавит экземпляр DoSomethingProcessRunner.
+// If the runner wasn't added to the pipeline, GetRunnerAuto will automatically add an instance of DoSomethingProcessRunner.
 _pipeline.GetRunnerAuto<IDoSomethingProcess>().Do();
 ```
 
