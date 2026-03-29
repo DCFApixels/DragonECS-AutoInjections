@@ -41,6 +41,14 @@ The extension is designed to reduce the amount of code by simplifying dependency
 >
 > While the English version of the README is incomplete, you can view the [Russian version](https://github.com/DCFApixels/DragonECS-AutoInjections/blob/main/README-RU.md).
 
+# Оглавление
+- [Installation](#Installation)
+- [Integration](#Integration)
+- [Dependency Injection](#Dependency-Injection)
+- [Auto Builder for aspects](#Auto-Builder-for-aspects)
+- [Auto Runners](#Auto-Runners)
+- [Code Example](#Code-Example)
+- [Non-null injections](#Non-null-injections)
 
 </br>
 
@@ -108,7 +116,53 @@ EcsDefaultWorld _world;
 
 > Aggressive injection (without the `[DI]` attribute) is enabled by calling `.AutoInject(true)`.
 
+</br>
+
+# Auto Builder for aspects
+AutoInjections also simplifies building aspects. The following attributes are available:
+
+Attributes for initializing pool fields:
+* `[Inc]` - caches the pool and adds the component type to the include constraint of the aspect (equivalent to `Include<T>()`);
+* `[Exc]` - caches the pool and adds the component type to the exclude constraint (equivalent to `Exclude<T>()`);
+* `[Opt]` - only caches the pool (equivalent to `Optional<T>`);
+* 
+Attribute for combining aspects:
+* `[Combine(order)]` - caches the aspect and merges constraints from aspects (equivalent to `Combine<TOtherAspect>(int)`); order sets combine order (default 0);
+
+Additional attributes for specifying aspect constraints. They can be applied to the aspect itself or any field inside:
+* `[IncImplicit(type)]` - adds Type from the constructor to the include constraint (equivalent to `Include<T>()`);
+* `[ExcImplicit(type)]` - adds Type from the constructor to the exclude constraint (equivalent to `Exclude<T>()`);
+
+</br>
+
+# Auto Runners
+
+To obtain runners without adding them manually, use `[BindWithRunner(type)]` and `GetRunnerAuto<T>()`.
+
+```c#
+[BindWithRunner(typeof(DoSomethingProcessRunner))]
+interface IDoSomethingProcess : IEcsProcess
+{
+    void Do();
+}
+//Реализация раннера. Пример реализации можно так же посмотреть в встроенных процессах 
+sealed class DoSomethingProcessRunner : EcsRunner<IDoSomethingProcess>, IDoSomethingProcess
+{
+    public void Do() 
+    {
+        foreach (var item in Process) item.Do();
+    }
+}
+
+//...
+// Если в пайплайн не был добавлен раннер, то GetRunnerAuto автоматически добавит экземпляр DoSomethingProcessRunner.
+_pipeline.GetRunnerAuto<IDoSomethingProcess>().Do();
+```
+
+</br>
+
 # Code Example
+
 ```c#
 class VelocitySystemDI : IEcsRun
 {
@@ -131,8 +185,11 @@ class VelocitySystemDI : IEcsRun
     }
 }
 ```
+
+
 <details>
 <summary>Same code but without AutoInjections</summary>
+
     
 ```c#
 class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeService>
@@ -165,4 +222,13 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
 }
 ```
 
+
 </details>
+
+
+# Non-null injections
+To ensure a field marked with `[DI]` is initialized even if injection does not occur, pass a fallback type to the attribute constructor. In the example below the field `Foo` will receive the injected `Foo` instance or an instance of `FooDummy : Foo` if injection was not performed.
+
+> The provided type must have a parameterless constructor and be either the same type as the field or derived from it.
+
+The extension will also report if any `[DI]`-marked fields remain uninitialized after the pre-injection phase.
