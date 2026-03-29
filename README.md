@@ -122,16 +122,16 @@ EcsDefaultWorld _world;
 AutoInjections also simplifies building aspects. The following attributes are available:
 
 Attributes for initializing pool fields:
-* `[Inc]` - caches the pool and adds the component type to the include constraint of the aspect (equivalent to `Include<T>()`);
-* `[Exc]` - caches the pool and adds the component type to the exclude constraint (equivalent to `Exclude<T>()`);
-* `[Opt]` - only caches the pool (equivalent to `Optional<T>`);
+* `[Inc]` - caches the pool and adds the component type to the include constraint of the aspect (equivalent to `Inc<T>()`);
+* `[Exc]` - caches the pool and adds the component type to the exclude constraint (equivalent to `Exc<T>()`);
+* `[Opt]` - only caches the pool (equivalent to `Opt<T>`);
 * 
 Attribute for combining aspects:
 * `[Combine(order)]` - caches the aspect and merges constraints from aspects (equivalent to `Combine<TOtherAspect>(int)`); order sets combine order (default 0);
 
 Additional attributes for specifying aspect constraints. They can be applied to the aspect itself or any field inside:
-* `[IncImplicit(type)]` - adds Type from the constructor to the include constraint (equivalent to `Include<T>()`);
-* `[ExcImplicit(type)]` - adds Type from the constructor to the exclude constraint (equivalent to `Exclude<T>()`);
+* `[IncImplicit(type)]` - adds Type from the constructor to the include constraint (equivalent to `Inc<T>()`);
+* `[ExcImplicit(type)]` - adds Type from the constructor to the exclude constraint (equivalent to `Exc<T>()`);
 
 </br>
 
@@ -200,9 +200,9 @@ class VelocitySystem : IEcsRun, IEcsInject<EcsDefaultWorld>, IEcsInject<TimeServ
         public EcsPool<Velocity> velocities;
         public Aspect(Builder b)
         {
-            b.Exclude<FreezedTag>();
-            poses = b.Include<Pose>();
-            velocities = b.Include<Velocity>();
+            b.Exc<FreezedTag>();
+            poses = b.Inc<Pose>();
+            velocities = b.Inc<Velocity>();
         }
     }
 
