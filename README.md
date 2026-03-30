@@ -133,6 +133,15 @@ Additional attributes for specifying aspect constraints. They can be applied to 
 * `[IncImplicit(type)]` - adds Type from the constructor to the include constraint (equivalent to `Inc<T>()`);
 * `[ExcImplicit(type)]` - adds Type from the constructor to the exclude constraint (equivalent to `Exc<T>()`);
 
+To initialize an aspect, it is not necessary to inherit from EcsAspect. Example:
+```c#
+class Aspect
+{
+    [ExcImplicit(typeof(FreezedTag))]
+    [Inc] public EcsPool<Pose> poses;
+    [Inc] public EcsPool<Velocity> velocities;
+}
+```
 </br>
 
 # Auto Runners
@@ -166,7 +175,7 @@ _pipeline.GetRunnerAuto<IDoSomethingProcess>().Do();
 ```c#
 class VelocitySystemDI : IEcsRun
 {
-    class Aspect : EcsAspectAuto
+    class Aspect
     {
         [ExcImplicit(typeof(FreezedTag))]
         [Inc] public EcsPool<Pose> poses;

@@ -118,7 +118,7 @@ EcsDefaultWorld _world;
 </br>
 
 # Auto Builder аспектов
-Так же AutoInjections упрощает построение аспектов. Для этого есть следующие атрибуты:
+Так же AutoInjections упрощает построение аспектов. Теперь аспекту Для этого есть следующие атрибуты:
 
 Атрибуты для инициализации полей с пулами: 
 * `[Inc]` - кеширует пул и добавит тип компонента в включающее ограничение аспекта, аналог метода `Inc<T>()`;
@@ -131,6 +131,16 @@ EcsDefaultWorld _world;
 Дополнительные атрибуты только для задания ограничений аспекта. Их можно применить к самому аспекту, либо к любому полю внутри. Используйте атрибуты: 
 * `[IncImplicit(type)]` - добавит в включающее ограничение указанный в конструкторе тип `type`, аналог метода `Inc<T>()`;
 * `[ExcImplicit(type)]` - добавит в исключающее ограничение указанный в конструкторе тип `type`, аналог метода `Exc<T>()`;
+
+Для инициализации аспекта не обязательно наследоваться от `EcsAspect`, Пример:
+```c#
+class Aspect
+{
+    [ExcImplicit(typeof(FreezedTag))]
+    [Inc] public EcsPool<Pose> poses;
+    [Inc] public EcsPool<Velocity> velocities;
+}
+```
 
 </br>
 
@@ -164,7 +174,7 @@ _pipeline.GetRunnerAuto<IDoSomethingProcess>().Do();
 ```c#
 class VelocitySystemDI : IEcsRun
 {
-    class Aspect : EcsAspectAuto
+    class Aspect
     {
         [ExcImplicit(typeof(FreezedTag))]
         [Inc] public EcsPool<Pose> poses;
