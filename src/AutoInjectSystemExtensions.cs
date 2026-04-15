@@ -2,11 +2,15 @@
 #undef DEBUG
 #endif
 
+using DCFApixels.DragonECS.AutoInjections;
+
 namespace DCFApixels.DragonECS
 {
     public static class AutoInjectSystemExtensions
     {
         [MetaColor(MetaColor.DragonCyan)]
+        [MetaTags(MetaTags.HIDDEN)]
+        [MetaGroup(EcsAutoInjectionsConsts.PACK_GROUP, EcsConsts.MODULES_GROUP)]
         public class AutoInjectModule : IEcsModule
         {
             public bool isAgressiveInjection;
