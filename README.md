@@ -56,7 +56,7 @@ The extension is designed to reduce the amount of code by simplifying dependency
 Versioning semantics - [Open](https://gist.github.com/DCFApixels/af79284955bf40e9476cdcac79d7b098#file-dcfapixels_versioning-md)
 ## Environment
 Requirements:
-+ Dependency: [DragonECS](https://github.com/DCFApixels/DragonECS)
++ Dependency: [DragonECS](https://github.com/DCFApixels/DragonECS) `[1.0.0]`;
 + Minimum version of C# 7.3;
   
 Optional:
